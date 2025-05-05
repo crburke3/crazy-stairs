@@ -1,73 +1,155 @@
 #include <FastLED.h>
 #include <Arduino.h>
 #include <Wire.h>
-#include <APDS9930.h>
+#include "vl53l0x_multiplexer.h"
 
 // I2C Pin Configuration
 #define I2C_SDA 21
 #define I2C_SCL 22
 
 // LED Configuration
-#define NUM_LEDS 122
+#define NUM_LEDS 400
 #define DATA_PIN 16
 #define POWER_PIN 12
+#define FADE_SPEED 5  // How many brightness steps per update
+#define TRIGGER_DISTANCE 300  // Distance in mm to trigger LED section
+#define FADE_DURATION 2000  // Duration in ms for fade out
+
+// LED Section Definitions
+struct LEDSection {
+    int startIndex;
+    int endIndex;
+    bool isActive;
+    unsigned long triggerTime;
+    uint8_t brightness;
+};
+
+// Define LED sections
+LEDSection sections[] = {
+    {0, 112, false, 0, 0},    // Section 1: LEDs 0-5 controlled by channel 0
+    {112, 224, false, 0, 0}   // Section 2: LEDs 5-122 controlled by channel 1
+};
 
 // Global Variables
-APDS9930 apds = APDS9930();
+VL53L0XMultiplexer* sensorMux1 = nullptr;
 CRGB leds[NUM_LEDS];
-uint8_t hue = 0;  // For color cycling
 
-bool initializeSensor() {
-    Serial.println("\nInitializing APDS-9930 sensor...");
-    
-    // First check if we can detect the device on I2C
-    Wire.beginTransmission(APDS9930_I2C_ADDR);
-    byte error = Wire.endTransmission();
-    if (error != 0) {
-        Serial.print("  ✗ I2C device not found at address 0x");
-        Serial.println(APDS9930_I2C_ADDR, HEX);
-        Serial.println("  Please check your connections and power supply");
-        return false;
-    }
-    Serial.println("  ✓ I2C device found");
-    
-    // Try to initialize the sensor
-    if (apds.init()) {
-        Serial.println("  ✓ Sensor initialization successful");
+void updateLEDSection(LEDSection& section, bool triggered) {
+    if (triggered) {
+        // If section is triggered, set to full brightness and record time
+        section.isActive = true;
+        section.triggerTime = millis();
+        section.brightness = 255;
         
-        // Enable proximity sensor
-        Serial.println("\nConfiguring proximity sensor...");
-        if (apds.enableProximitySensor()) {
-            Serial.println("  ✓ Proximity sensor enabled");
+        // Set all LEDs in section to white at full brightness
+        for (int i = section.startIndex; i < section.endIndex; i++) {
+            leds[i] = CRGB::White;
+        }
+    } else if (section.isActive) {
+        // If section was active, check if it's time to fade
+        unsigned long elapsed = millis() - section.triggerTime;
+        if (elapsed >= FADE_DURATION) {
+            section.isActive = false;
+            section.brightness = 0;
+        } else {
+            // Calculate fade based on elapsed time
+            section.brightness = map(elapsed, 0, FADE_DURATION, 255, 0);
+        }
+        
+        // Apply brightness to all LEDs in section
+        for (int i = section.startIndex; i < section.endIndex; i++) {
+            leds[i].nscale8(section.brightness);
+        }
+    }
+}
+
+bool scanForMultiplexers(uint8_t& mux1Addr) {
+    Serial.println("\nScanning for TCA9548A multiplexer...");
+    bool foundMux1 = false;
+    int foundCount = 0;
+    
+    for (uint8_t addr = 0x70; addr <= 0x77; addr++) {
+        Wire.beginTransmission(addr);
+        uint8_t error = Wire.endTransmission();
+        
+        Serial.print("Address 0x");
+        Serial.print(addr, HEX);
+        Serial.print(": ");
+        
+        if (error == 0) {
+            Serial.println("Found TCA9548A");
+            foundCount++;
             
-            // Set proximity gain to maximum (8X) for better range
-            if (apds.setProximityGain(PGAIN_8X)) {
-                Serial.println("  ✓ Proximity gain set to 8X");
-                
-                // Set LED drive strength to maximum (100mA)
-                if (apds.setLEDDrive(LED_DRIVE_100MA)) {
-                    Serial.println("  ✓ LED drive set to 100mA");
-                    
-                    // Read the proximity gain to verify
-                    uint8_t gain = apds.getProximityGain();
-                    Serial.print("  ✓ Verified proximity gain: ");
-                    Serial.println(gain);
-                    Serial.println("\nSensor setup complete!");
-                    return true;
-                } else {
-                    Serial.println("  ✗ Failed to set LED drive!");
-                }
-            } else {
-                Serial.println("  ✗ Failed to set proximity gain!");
+            if (!foundMux1) {
+                mux1Addr = addr;
+                foundMux1 = true;
             }
         } else {
-            Serial.println("  ✗ Failed to enable proximity sensor!");
+            Serial.println("No device");
         }
-    } else {
-        Serial.println("  ✗ Sensor initialization failed!");
-        Serial.println("  Please check your connections and power supply");
     }
-    return false;
+    
+    Serial.print("\nFound ");
+    Serial.print(foundCount);
+    Serial.println(" TCA9548A multiplexers");
+    
+    if (!foundMux1) {
+        Serial.println("✗ Could not find a TCA9548A multiplexer");
+        return false;
+    }
+    
+    Serial.print("Using multiplexer at address 0x");
+    Serial.println(mux1Addr, HEX);
+    
+    return true;
+}
+
+bool initializeSensors() {
+    uint8_t mux1Addr;
+    if (!scanForMultiplexers(mux1Addr)) {
+        return false;
+    }
+    
+    // Create multiplexer instance with found address
+    sensorMux1 = new VL53L0XMultiplexer(mux1Addr);
+    
+    Serial.println("\nInitializing TCA9548A multiplexer...");
+    bool mux1Initialized = false;
+    
+    // Try to initialize multiplexer
+    Serial.print("Attempting to initialize Multiplexer (0x");
+    Serial.print(mux1Addr, HEX);
+    Serial.println("):");
+    mux1Initialized = sensorMux1->begin();
+    if (mux1Initialized) {
+        Serial.println("✓ Multiplexer initialized successfully");
+    } else {
+        Serial.println("✗ Failed to initialize multiplexer");
+        return false;
+    }
+
+    // Initialize sensors on multiplexer
+    Serial.println("\nInitializing VL53L0X sensors...");
+    bool allSensorsInitialized = true;
+    
+    // Initialize sensor on channel 0
+    if (!sensorMux1->initSensor(0, 0)) {
+        Serial.println("✗ Failed to initialize sensor on channel 0");
+        allSensorsInitialized = false;
+    }
+    
+    // Initialize sensor on channel 1
+    if (!sensorMux1->initSensor(1, 0)) {
+        Serial.println("✗ Failed to initialize sensor on channel 1");
+        allSensorsInitialized = false;
+    }
+    
+    if (!allSensorsInitialized) {
+        Serial.println("\nWarning: Not all sensors initialized successfully");
+        Serial.println("The system will continue with available sensors");
+    }
+    
+    return true;
 }
 
 void setup() {
@@ -77,7 +159,7 @@ void setup() {
     // Initialize Serial port
     Serial.begin(115200);
     Serial.println("\n----------------------------------------");
-    Serial.println("APDS-9930 Proximity Sensor Test Program");
+    Serial.println("VL53L0X Distance Sensor Test Program");
     Serial.println("----------------------------------------");
     
     // Initialize LEDs
@@ -87,7 +169,7 @@ void setup() {
     FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
     
     // Turn on all LEDs with initial color
-    fill_solid(leds, NUM_LEDS, CHSV(hue, 255, 255));
+    fill_solid(leds, NUM_LEDS, CHSV(0, 0, 0));
     FastLED.show();
     Serial.println("✓ LEDs initialized and turned on");
     
@@ -100,44 +182,49 @@ void setup() {
     Wire.begin(I2C_SDA, I2C_SCL);
     Serial.println("✓ I2C communication initialized");
     
-    // Keep trying to initialize the sensor until it succeeds
-    bool sensorInitialized = false;
-    while (!sensorInitialized) {
-        sensorInitialized = initializeSensor();
-        if (!sensorInitialized) {
+    // Keep trying to initialize the sensors until the multiplexer is working
+    bool sensorsInitialized = false;
+    int attemptCount = 0;
+    
+    while (!sensorsInitialized) {
+        attemptCount++;
+        Serial.print("\nAttempt ");
+        Serial.println(attemptCount);
+        
+        sensorsInitialized = initializeSensors();
+        if (!sensorsInitialized) {
             Serial.println("\nRetrying sensor initialization in 1 second...");
             delay(1000);
         }
     }
     
+    Serial.println("\n✓ All sensors initialized successfully");
     Serial.println("\nStarting LED animation and sensor monitoring...");
 }
 
 void loop() {
-    static unsigned long lastPrintTime = 0;
-    unsigned long currentTime = millis();
+    // Read distances from multiplexer
+    uint16_t distance1_ch0, distance1_ch1;
+    bool ch0Triggered = false;
+    bool ch1Triggered = false;
     
-    // Read proximity value continuously
-    uint16_t proximity = 0;
-    if (apds.readProximity(proximity)) {
-        // Map proximity to hue (0-255)
-        // Higher proximity = closer object = different color
-        uint8_t newHue = map(proximity, 0, 1023, 0, 255);
-        
-        // Update LEDs with new color
-        fill_solid(leds, NUM_LEDS, CHSV(newHue, 255, 255));
-        FastLED.show();
-        
-        // Print proximity value every 500ms instead of 2000ms
-        if (currentTime - lastPrintTime >= 500) {
-            Serial.print("\nProximity: ");
-            Serial.println(proximity);
-            lastPrintTime = currentTime;
-        }
-    } else {
-        Serial.println("Error reading proximity!");
+    if (sensorMux1->readDistance(0, distance1_ch0)) {
+        ch0Triggered = (distance1_ch0 < TRIGGER_DISTANCE);
     }
     
-    // Remove the delay to make readings faster
-    // delay(50);
+    delay(10);  // Small delay between channel reads
+    
+    if (sensorMux1->readDistance(1, distance1_ch1)) {
+        ch1Triggered = (distance1_ch1 < TRIGGER_DISTANCE);
+    }
+    
+    // Update LED sections based on sensor readings
+    updateLEDSection(sections[0], ch0Triggered);  // Update section controlled by channel 0
+    updateLEDSection(sections[1], ch1Triggered);  // Update section controlled by channel 1
+    
+    // Show the updated LEDs
+    FastLED.show();
+    
+    // Small delay to prevent overwhelming the system
+    delay(10);
 }
