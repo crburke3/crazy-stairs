@@ -12,7 +12,7 @@
 #define DATA_PIN 16
 #define POWER_PIN 12
 #define FADE_SPEED 5  // How many brightness steps per update
-#define TRIGGER_DISTANCE 300  // Distance in mm to trigger LED section
+#define TRIGGER_DISTANCE 661  // Distance in mm to trigger LED section
 #define FADE_DURATION 2000  // Duration in ms for fade out
 
 // LED Section Definitions
@@ -219,8 +219,8 @@ void loop() {
     }
     
     // Update LED sections based on sensor readings
-    updateLEDSection(sections[0], ch0Triggered);  // Update section controlled by channel 0
-    updateLEDSection(sections[1], ch1Triggered);  // Update section controlled by channel 1
+    updateLEDSection(sections[0], ch0Triggered);
+    updateLEDSection(sections[1], ch1Triggered);
     
     // Show the updated LEDs
     FastLED.show();
