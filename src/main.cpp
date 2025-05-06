@@ -30,6 +30,7 @@ enum AnimationMode {
     IMPACT_FADE,
     CASCADE_FADE,
     GRADIENT_FADE,
+    POLICE_LIGHTS,
     // Add more modes here as needed
     NUM_ANIMATION_MODES
 };
@@ -39,6 +40,7 @@ const char* ANIMATION_MODE_NAMES[] = {
     "Impact Fade",
     "Cascade Fade",
     "Gradient Fade",
+    "Police Lights",
     // Add more mode names here
 };
 
@@ -326,6 +328,30 @@ void updateSection(LEDSection& section) {
                 }
             }
             break;
+        case POLICE_LIGHTS:
+            if (section.isActive) {
+                unsigned long elapsed = millis() - section.triggerTime;
+                if (elapsed >= FADE_DURATION) {
+                    section.isActive = false;
+                    section.brightness = 0;
+                    for (int i = section.startIndex; i < section.endIndex; i++) {
+                        leds[i] = CRGB::Black;
+                    }
+                } else {
+                    // Flash between red and blue
+                    bool isRed = (elapsed / 100) % 2 == 0;  // Switch every 100ms
+                    CRGB color = isRed ? CRGB::Red : CRGB::Blue;
+                    
+                    // Apply color to all LEDs in section
+                    for (int i = section.startIndex; i < section.endIndex; i++) {
+                        leds[i] = color;
+                    }
+                }
+            }
+            break;
+        case NUM_ANIMATION_MODES:
+            // This case should never be reached due to the check above
+            break;
     }
 }
 
@@ -342,11 +368,13 @@ void handleSectionTrigger(LEDSection& section, int sectionIndex) {
         currentMode = IMPACT_FADE;  // Reset to first mode if invalid
     }
     
+    // Common setup for all modes
+    section.isActive = true;
+    section.triggerTime = millis();
+    section.brightness = 255;
+    
     switch (currentMode) {
-        case IMPACT_FADE:
-            section.isActive = true;
-            section.triggerTime = millis();
-            section.brightness = 255;
+        case IMPACT_FADE: {
             section.targetColor = getRandomColor();
             
             // Log the trigger and color information
@@ -360,13 +388,11 @@ void handleSectionTrigger(LEDSection& section, int sectionIndex) {
                 leds[i] = CRGB::White;
             }
             break;
+        }
             
-        case CASCADE_FADE:
+        case CASCADE_FADE: {
             // Activate the main section
-            section.isActive = true;
             section.isAdjacent = false;
-            section.triggerTime = millis();
-            section.brightness = 255;
             section.targetColor = getRandomColor();
             
             // Log the trigger and color information
@@ -410,12 +436,9 @@ void handleSectionTrigger(LEDSection& section, int sectionIndex) {
                 }
             }
             break;
+        }
             
-        case GRADIENT_FADE:
-            section.isActive = true;
-            section.triggerTime = millis();
-            section.brightness = 255;
-            
+        case GRADIENT_FADE: {
             // Generate random gradient for this section
             CRGB gradient[STAIR_LENGTH];
             generateRandomGradient(gradient, STAIR_LENGTH);
@@ -428,6 +451,23 @@ void handleSectionTrigger(LEDSection& section, int sectionIndex) {
             Serial.print("Sensor ");
             Serial.print(sectionIndex);
             Serial.println(" triggered! Applied random gradient");
+            break;
+        }
+            
+        case POLICE_LIGHTS: {
+            // Start with red
+            for (int i = section.startIndex; i < section.endIndex; i++) {
+                leds[i] = CRGB::Red;
+            }
+            
+            Serial.print("Sensor ");
+            Serial.print(sectionIndex);
+            Serial.println(" triggered! Police lights activated");
+            break;
+        }
+            
+        case NUM_ANIMATION_MODES:
+            // This case should never be reached due to the check above
             break;
     }
 }
