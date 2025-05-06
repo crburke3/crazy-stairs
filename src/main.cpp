@@ -7,13 +7,20 @@
 #define I2C_SDA 21
 #define I2C_SCL 22
 
+// Stair Configuration
+#define STAIR_LENGTH 30    // Number of LEDs per stair
+#define NUM_STAIRS 10      // Total number of stairs
+#define NUM_LEDS (STAIR_LENGTH * NUM_STAIRS)  // Total number of LEDs
+
 // LED Configuration
-#define NUM_LEDS 400
 #define DATA_PIN 16
 #define POWER_PIN 12
-#define FADE_SPEED 5  // How many brightness steps per update
-#define TRIGGER_DISTANCE 661  // Distance in mm to trigger LED section
-#define FADE_DURATION 2000  // Duration in ms for fade out
+#define TRIGGER_DISTANCE 740  // Distance in mm to trigger LED section 
+#define FADE_DURATION 700  // Duration in ms for fade out (reduced from 2000ms to 1000ms)
+#define STATUS_CHECK_INTERVAL 10000  // Check status every 10 seconds
+#define DISTANCE_LOG_INTERVAL 5000    // Log distances every 5 seconds
+#define LED_FRAME_UPDATE_INTERVAL 1    // Update LEDs every 3ms for smoother animation (16 = 60fps, 3 = 330fps)
+#define SENSOR_CHECK_INTERVAL 300  // Check sensors every 100ms
 
 // LED Section Definitions
 struct LEDSection {
@@ -22,24 +29,193 @@ struct LEDSection {
     bool isActive;
     unsigned long triggerTime;
     uint8_t brightness;
-};
-
-// Define LED sections
-LEDSection sections[] = {
-    {0, 112, false, 0, 0},    // Section 1: LEDs 0-5 controlled by channel 0
-    {112, 224, false, 0, 0}   // Section 2: LEDs 5-122 controlled by channel 1
+    bool isConnected;  // Track if this section's sensor is connected
+    bool isInitialized;  // Track if this section's sensor has been initialized
+    CRGB targetColor;   // The color to fade into
 };
 
 // Global Variables
 VL53L0XMultiplexer* sensorMux1 = nullptr;
 CRGB leds[NUM_LEDS];
+unsigned long lastStatusCheck = 0;
+unsigned long lastDistanceLog = 0;
+bool multiplexerConnected = false;
+LEDSection* sections = nullptr;  // Will be dynamically allocated
+int numSections = 0;  // Will be set based on number of stairs
 
-void updateLEDSection(LEDSection& section, bool triggered) {
+// Easing function for smooth fade out (easeOutQuad)
+uint8_t easeOutQuad(unsigned long elapsed, unsigned long duration) {
+    float t = (float)elapsed / duration;
+    t = 1.0f - (t * t);  // Quadratic ease out
+    return (uint8_t)(t * 255.0f);
+}
+
+// Function to blend between two colors
+CRGB blendColors(CRGB color1, CRGB color2, uint8_t amount) {
+    CRGB result;
+    result.r = (color1.r * (255 - amount) + color2.r * amount) / 255;
+    result.g = (color1.g * (255 - amount) + color2.g * amount) / 255;
+    result.b = (color1.b * (255 - amount) + color2.b * amount) / 255;
+    return result;
+}
+
+// Function to convert CRGB to hex string for logging
+String colorToHex(CRGB color) {
+    char hex[8];
+    snprintf(hex, sizeof(hex), "#%02X%02X%02X", color.r, color.g, color.b);
+    return String(hex);
+}
+
+void initializeLEDSections() {
+    // Each stair gets its own section
+    numSections = NUM_STAIRS;
+    sections = new LEDSection[numSections];
+    
+    // Initialize each section
+    for (int i = 0; i < numSections; i++) {
+        sections[i] = {
+            i * STAIR_LENGTH,           // startIndex
+            (i + 1) * STAIR_LENGTH,     // endIndex
+            false,                      // isActive
+            0,                          // triggerTime
+            0,                          // brightness
+            false,                      // isConnected
+            false,                      // isInitialized
+            CRGB::Black                 // targetColor
+        };
+    }
+    
+    // Print section information
+    Serial.println("\nLED Section Configuration:");
+    for (int i = 0; i < numSections; i++) {
+        Serial.print("Section ");
+        Serial.print(i);
+        Serial.print(": LEDs ");
+        Serial.print(sections[i].startIndex);
+        Serial.print(" to ");
+        Serial.print(sections[i].endIndex - 1);
+        Serial.print(" (");
+        Serial.print(sections[i].endIndex - sections[i].startIndex);
+        Serial.println(" LEDs)");
+    }
+    Serial.println();
+}
+
+bool initializeSensorChannel(uint8_t channel) {
+    if (sensorMux1 != nullptr && channel < numSections) {
+        if (sensorMux1->initSensor(channel, 0)) {
+            Serial.print("Successfully initialized sensor on channel ");
+            Serial.println(channel);
+            sections[channel].isInitialized = true;
+            return true;
+        } else {
+            Serial.print("Failed to initialize sensor on channel ");
+            Serial.println(channel);
+            sections[channel].isInitialized = false;
+            return false;
+        }
+    }
+    return false;
+}
+
+void checkMultiplexerStatus() {
+    Serial.println("\n=== Multiplexer Status Check ===");
+    bool foundAnyMux = false;
+    
+    // Check all possible multiplexer addresses (0x70 to 0x77)
+    for (uint8_t addr = 0x70; addr <= 0x77; addr++) {
+        Wire.beginTransmission(addr);
+        uint8_t error = Wire.endTransmission();
+        
+        if (error == 0) {
+            foundAnyMux = true;
+            Serial.print("Found multiplexer at address 0x");
+            Serial.println(addr, HEX);
+            
+            // Create temporary multiplexer instance to check channels
+            VL53L0XMultiplexer tempMux(addr);
+            if (tempMux.begin()) {
+                Serial.println("Connected channels:");
+                
+                // Reset all section connection statuses
+                for (int i = 0; i < numSections; i++) {
+                    sections[i].isConnected = false;
+                }
+                
+                // Check each channel (0-7)
+                for (uint8_t channel = 0; channel < 8; channel++) {
+                    Wire.beginTransmission(addr);
+                    Wire.write(1 << channel);  // Select channel
+                    if (Wire.endTransmission() == 0) {
+                        // Try to read from VL53L0X address (0x29)
+                        Wire.beginTransmission(0x29);
+                        uint8_t sensorError = Wire.endTransmission();
+                        if (sensorError == 0) {
+                            Serial.print("  Channel ");
+                            Serial.print(channel);
+                            Serial.println(": VL53L0X sensor detected");
+                            
+                            // Update section connection status if within range
+                            if (channel < numSections) {
+                                sections[channel].isConnected = true;
+                                // Initialize the sensor if it's newly connected
+                                if (!sections[channel].isInitialized) {
+                                    initializeSensorChannel(channel);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    if (!foundAnyMux) {
+        Serial.println("No multiplexers found!");
+        multiplexerConnected = false;
+        // Reset all section connection statuses
+        for (int i = 0; i < numSections; i++) {
+            sections[i].isConnected = false;
+            sections[i].isInitialized = false;
+        }
+    } else {
+        multiplexerConnected = true;
+    }
+    
+    Serial.println("==============================\n");
+}
+
+// Function to generate a random color
+CRGB getRandomColor() {
+    // Generate random hue (0-255)
+    uint8_t hue = random8();
+    // Convert HSV to RGB
+    CRGB color;
+    hsv2rgb_rainbow(CHSV(hue, 255, 255), color);
+    return color;
+}
+
+void updateLEDSection(LEDSection& section, bool triggered, int sectionIndex) {
+    if (!section.isConnected) {
+        // If section's sensor is not connected, keep LEDs off
+        for (int i = section.startIndex; i < section.endIndex; i++) {
+            leds[i] = CRGB::Black;
+        }
+        return;
+    }
+
     if (triggered) {
         // If section is triggered, set to full brightness and record time
         section.isActive = true;
         section.triggerTime = millis();
         section.brightness = 255;
+        section.targetColor = getRandomColor();  // Set new random color
+        
+        // Log the trigger and color information
+        Serial.print("Sensor ");
+        Serial.print(sectionIndex);
+        Serial.print(" triggered! Fading to color: ");
+        Serial.println(colorToHex(section.targetColor));
         
         // Set all LEDs in section to white at full brightness
         for (int i = section.startIndex; i < section.endIndex; i++) {
@@ -52,179 +228,215 @@ void updateLEDSection(LEDSection& section, bool triggered) {
             section.isActive = false;
             section.brightness = 0;
         } else {
-            // Calculate fade based on elapsed time
-            section.brightness = map(elapsed, 0, FADE_DURATION, 255, 0);
+            // Use easing function for smooth fade
+            section.brightness = easeOutQuad(elapsed, FADE_DURATION);
         }
         
         // Apply brightness to all LEDs in section
         for (int i = section.startIndex; i < section.endIndex; i++) {
-            leds[i].nscale8(section.brightness);
+            // Blend from white to random color as it fades
+            uint8_t colorBlend = 255 - section.brightness;
+            leds[i] = blendColors(CRGB::White, section.targetColor, colorBlend);
+            // Apply gamma correction for more natural-looking fade
+            leds[i].nscale8_video(section.brightness);
         }
     }
 }
 
-bool scanForMultiplexers(uint8_t& mux1Addr) {
-    Serial.println("\nScanning for TCA9548A multiplexer...");
-    bool foundMux1 = false;
-    int foundCount = 0;
+void logSensorDistances() {
+    if (!multiplexerConnected || sensorMux1 == nullptr) {
+        return;
+    }
+
+    Serial.print("Distances: ");
+    bool anySensorRead = false;
+
+    // Check each section's sensor
+    for (int i = 0; i < numSections; i++) {
+        if (sections[i].isConnected) {
+            uint16_t distance = 0;
+            if (sensorMux1->readDistance(i, distance)) {
+                Serial.print("S");
+                Serial.print(i);
+                Serial.print(":");
+                Serial.print(distance);
+                Serial.print("mm ");
+                anySensorRead = true;
+            } else {
+                // Sensor is connected but failed to read
+                Serial.print("S");
+                Serial.print(i);
+                Serial.print(":FAIL ");
+            }
+        }
+    }
+
+    if (!anySensorRead) {
+        Serial.print("No sensors connected");
+    }
+    Serial.println();
+}
+
+void setup() {
+    // Initialize Serial for debugging
+    Serial.begin(115200);
+    delay(4000);
+    Serial.println("Starting Crazy Stairs...");
+    
+    // Initialize random seed
+    random16_set_seed(analogRead(0));
+    
+    // Initialize I2C
+    Wire.begin(I2C_SDA, I2C_SCL);
+    
+    // Initialize LED power pin
+    pinMode(POWER_PIN, OUTPUT);
+    digitalWrite(POWER_PIN, HIGH);
+    
+    // Initialize FastLED
+    FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
+    FastLED.setBrightness(255);
+    FastLED.clear();
+    FastLED.show();
+    
+    // Initialize LED sections
+    initializeLEDSections();
+    
+    // Scan for multiplexer
+    Serial.println("Scanning for multiplexer...");
+    checkMultiplexerStatus();
+    bool foundMux = false;
+    uint8_t muxAddr = 0x70;
     
     for (uint8_t addr = 0x70; addr <= 0x77; addr++) {
         Wire.beginTransmission(addr);
         uint8_t error = Wire.endTransmission();
         
-        Serial.print("Address 0x");
-        Serial.print(addr, HEX);
-        Serial.print(": ");
-        
         if (error == 0) {
-            Serial.println("Found TCA9548A");
-            foundCount++;
-            
-            if (!foundMux1) {
-                mux1Addr = addr;
-                foundMux1 = true;
+            Serial.print("Found multiplexer at address 0x");
+            Serial.println(addr, HEX);
+            muxAddr = addr;
+            foundMux = true;
+            break;
+        }
+    }
+    
+    if (foundMux) {
+        // Initialize multiplexer with found address
+        sensorMux1 = new VL53L0XMultiplexer(muxAddr);
+        if (sensorMux1->begin()) {
+            Serial.println("Initializing all detected sensors...");
+            // Initialize all possible channels (0-7)
+            for (uint8_t channel = 0; channel < 8; channel++) {
+                if (sensorMux1->initSensor(channel, 0)) {
+                    Serial.print("Successfully initialized sensor on channel ");
+                    Serial.println(channel);
+                }
             }
         } else {
-            Serial.println("No device");
+            Serial.println("Warning: Failed to initialize multiplexer, continuing without sensors");
+            delete sensorMux1;
+            sensorMux1 = nullptr;
         }
-    }
-    
-    Serial.print("\nFound ");
-    Serial.print(foundCount);
-    Serial.println(" TCA9548A multiplexers");
-    
-    if (!foundMux1) {
-        Serial.println("✗ Could not find a TCA9548A multiplexer");
-        return false;
-    }
-    
-    Serial.print("Using multiplexer at address 0x");
-    Serial.println(mux1Addr, HEX);
-    
-    return true;
-}
-
-bool initializeSensors() {
-    uint8_t mux1Addr;
-    if (!scanForMultiplexers(mux1Addr)) {
-        return false;
-    }
-    
-    // Create multiplexer instance with found address
-    sensorMux1 = new VL53L0XMultiplexer(mux1Addr);
-    
-    Serial.println("\nInitializing TCA9548A multiplexer...");
-    bool mux1Initialized = false;
-    
-    // Try to initialize multiplexer
-    Serial.print("Attempting to initialize Multiplexer (0x");
-    Serial.print(mux1Addr, HEX);
-    Serial.println("):");
-    mux1Initialized = sensorMux1->begin();
-    if (mux1Initialized) {
-        Serial.println("✓ Multiplexer initialized successfully");
     } else {
-        Serial.println("✗ Failed to initialize multiplexer");
-        return false;
-    }
-
-    // Initialize sensors on multiplexer
-    Serial.println("\nInitializing VL53L0X sensors...");
-    bool allSensorsInitialized = true;
-    
-    // Initialize sensor on channel 0
-    if (!sensorMux1->initSensor(0, 0)) {
-        Serial.println("✗ Failed to initialize sensor on channel 0");
-        allSensorsInitialized = false;
+        Serial.println("Warning: No multiplexer found, continuing without sensors");
     }
     
-    // Initialize sensor on channel 1
-    if (!sensorMux1->initSensor(1, 0)) {
-        Serial.println("✗ Failed to initialize sensor on channel 1");
-        allSensorsInitialized = false;
-    }
-    
-    if (!allSensorsInitialized) {
-        Serial.println("\nWarning: Not all sensors initialized successfully");
-        Serial.println("The system will continue with available sensors");
-    }
-    
-    return true;
-}
-
-void setup() {
-    // Wait for serial connection
-    delay(2000);
-    
-    // Initialize Serial port
-    Serial.begin(115200);
-    Serial.println("\n----------------------------------------");
-    Serial.println("VL53L0X Distance Sensor Test Program");
-    Serial.println("----------------------------------------");
-    
-    // Initialize LEDs
-    Serial.println("\nInitializing LEDs...");
-    pinMode(POWER_PIN, OUTPUT);
-    digitalWrite(POWER_PIN, HIGH);  // Enable 5V power supply
-    FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
-    
-    // Turn on all LEDs with initial color
-    fill_solid(leds, NUM_LEDS, CHSV(0, 0, 0));
-    FastLED.show();
-    Serial.println("✓ LEDs initialized and turned on");
-    
-    // Initialize I2C with custom pins
-    Serial.println("\nInitializing I2C communication...");
-    Serial.print("  SDA pin: GPIO");
-    Serial.println(I2C_SDA);
-    Serial.print("  SCL pin: GPIO");
-    Serial.println(I2C_SCL);
-    Wire.begin(I2C_SDA, I2C_SCL);
-    Serial.println("✓ I2C communication initialized");
-    
-    // Keep trying to initialize the sensors until the multiplexer is working
-    bool sensorsInitialized = false;
-    int attemptCount = 0;
-    
-    while (!sensorsInitialized) {
-        attemptCount++;
-        Serial.print("\nAttempt ");
-        Serial.println(attemptCount);
-        
-        sensorsInitialized = initializeSensors();
-        if (!sensorsInitialized) {
-            Serial.println("\nRetrying sensor initialization in 1 second...");
-            delay(1000);
-        }
-    }
-    
-    Serial.println("\n✓ All sensors initialized successfully");
-    Serial.println("\nStarting LED animation and sensor monitoring...");
+    Serial.println("Setup complete!");
 }
 
 void loop() {
-    // Read distances from multiplexer
-    uint16_t distance1_ch0, distance1_ch1;
-    bool ch0Triggered = false;
-    bool ch1Triggered = false;
+    static unsigned long lastUpdate = 0;
+    static unsigned long lastSensorCheck = 0;
     
-    if (sensorMux1->readDistance(0, distance1_ch0)) {
-        ch0Triggered = (distance1_ch0 < TRIGGER_DISTANCE);
+    // Check multiplexer status every 10 seconds
+    if (millis() - lastStatusCheck >= STATUS_CHECK_INTERVAL) {
+        checkMultiplexerStatus();
+        lastStatusCheck = millis();
     }
-    
-    delay(10);  // Small delay between channel reads
-    
-    if (sensorMux1->readDistance(1, distance1_ch1)) {
-        ch1Triggered = (distance1_ch1 < TRIGGER_DISTANCE);
+
+    // Log distances every 0.5 seconds
+    if (millis() - lastDistanceLog >= DISTANCE_LOG_INTERVAL) {
+        logSensorDistances();
+        lastDistanceLog = millis();
     }
-    
-    // Update LED sections based on sensor readings
-    updateLEDSection(sections[0], ch0Triggered);
-    updateLEDSection(sections[1], ch1Triggered);
-    
-    // Show the updated LEDs
-    FastLED.show();
+
+    // Check sensor distances at regular intervals
+    if (millis() - lastSensorCheck >= SENSOR_CHECK_INTERVAL) {
+        lastSensorCheck = millis();
+        
+        // Only check sensors if multiplexer is connected
+        if (multiplexerConnected && sensorMux1 != nullptr) {
+            // Process each section
+            for (int section = 0; section < numSections; section++) {
+                if (sections[section].isConnected) {
+                    uint16_t distance = 0;
+                    bool triggered = false;
+                    
+                    if (sensorMux1->readDistance(section, distance)) {
+                        // Check for sensor disconnection (65535mm is the error value)
+                        if (distance == 65535) {
+                            Serial.print("Sensor on channel ");
+                            Serial.print(section);
+                            Serial.println(" disconnected!");
+                            sections[section].isConnected = false;
+                            sections[section].isInitialized = false;
+                            // Turn off LEDs for this section
+                            for (int i = sections[section].startIndex; i < sections[section].endIndex; i++) {
+                                leds[i] = CRGB::Black;
+                            }
+                        } else {
+                            triggered = (distance < TRIGGER_DISTANCE);
+                            // Update the LED section's trigger state
+                            updateLEDSection(sections[section], triggered, section);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Update LED animations
+    if (millis() - lastUpdate >= LED_FRAME_UPDATE_INTERVAL) {
+        lastUpdate = millis();
+        
+        // Update all sections
+        for (int section = 0; section < numSections; section++) {
+            if (sections[section].isConnected) {
+                if (sections[section].isActive) {
+                    // If section was active, check if it's time to fade
+                    unsigned long elapsed = millis() - sections[section].triggerTime;
+                    if (elapsed >= FADE_DURATION) {
+                        sections[section].isActive = false;
+                        sections[section].brightness = 0;
+                    } else {
+                        // Use easing function for smooth fade
+                        sections[section].brightness = easeOutQuad(elapsed, FADE_DURATION);
+                        
+                        // Calculate color blend amount (inverse of brightness)
+                        uint8_t colorBlend = 255 - sections[section].brightness;
+                        
+                        // Apply color and brightness to all LEDs in section
+                        for (int i = sections[section].startIndex; i < sections[section].endIndex; i++) {
+                            // Blend from white to random color as it fades
+                            leds[i] = blendColors(CRGB::White, sections[section].targetColor, colorBlend);
+                            // Apply gamma correction for more natural-looking fade
+                            leds[i].nscale8_video(sections[section].brightness);
+                        }
+                    }
+                } else {
+                    // If section is not active, ensure LEDs are off
+                    for (int i = sections[section].startIndex; i < sections[section].endIndex; i++) {
+                        leds[i] = CRGB::Black;
+                    }
+                }
+            }
+        }
+        
+        // Show the updated LEDs
+        FastLED.show();
+    }
     
     // Small delay to prevent overwhelming the system
-    delay(10);
+    delay(1);
 }
