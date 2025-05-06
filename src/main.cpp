@@ -2,6 +2,9 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include "vl53l0x_multiplexer.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <freertos/semphr.h>
 
 // I2C Pin Configuration
 #define I2C_SDA 21
@@ -20,7 +23,22 @@
 #define STATUS_CHECK_INTERVAL 10000  // Check status every 10 seconds
 #define DISTANCE_LOG_INTERVAL 5000    // Log distances every 5 seconds
 #define LED_FRAME_UPDATE_INTERVAL 1    // Update LEDs every 3ms for smoother animation (16 = 60fps, 3 = 330fps)
-#define SENSOR_CHECK_INTERVAL 300  // Check sensors every 100ms
+#define SENSOR_CHECK_INTERVAL 50  // Check sensors every 100ms
+
+// Animation Mode Enum
+enum AnimationMode {
+    IMPACT_FADE,
+    CASCADE_FADE,
+    // Add more modes here as needed
+    NUM_ANIMATION_MODES
+};
+
+// Animation Mode Names
+const char* ANIMATION_MODE_NAMES[] = {
+    "Impact Fade",
+    "Cascade Fade",
+    // Add more mode names here
+};
 
 // LED Section Definitions
 struct LEDSection {
@@ -32,6 +50,7 @@ struct LEDSection {
     bool isConnected;  // Track if this section's sensor is connected
     bool isInitialized;  // Track if this section's sensor has been initialized
     CRGB targetColor;   // The color to fade into
+    bool isAdjacent;    // Track if this section is an adjacent section
 };
 
 // Global Variables
@@ -42,6 +61,14 @@ unsigned long lastDistanceLog = 0;
 bool multiplexerConnected = false;
 LEDSection* sections = nullptr;  // Will be dynamically allocated
 int numSections = 0;  // Will be set based on number of stairs
+AnimationMode currentMode = CASCADE_FADE;  // Current animation mode
+
+// Mutex for protecting shared resources
+SemaphoreHandle_t ledMutex = NULL;
+
+// Task handles
+TaskHandle_t sensorTaskHandle = NULL;
+TaskHandle_t ledTaskHandle = NULL;
 
 // Easing function for smooth fade out (easeOutQuad)
 uint8_t easeOutQuad(unsigned long elapsed, unsigned long duration) {
@@ -81,7 +108,8 @@ void initializeLEDSections() {
             0,                          // brightness
             false,                      // isConnected
             false,                      // isInitialized
-            CRGB::Black                 // targetColor
+            CRGB::Black,                // targetColor
+            false                       // isAdjacent
         };
     }
     
@@ -195,51 +223,152 @@ CRGB getRandomColor() {
     return color;
 }
 
-void updateLEDSection(LEDSection& section, bool triggered, int sectionIndex) {
-    if (!section.isConnected) {
-        // If section's sensor is not connected, keep LEDs off
-        for (int i = section.startIndex; i < section.endIndex; i++) {
-            leds[i] = CRGB::Black;
+// Animation Mode Functions
+namespace AnimationModes {
+    // Impact Fade Mode
+    void updateImpactFade(LEDSection& section) {
+        if (section.isActive) {
+            unsigned long elapsed = millis() - section.triggerTime;
+            if (elapsed >= FADE_DURATION) {
+                section.isActive = false;
+                section.brightness = 0;
+            } else {
+                section.brightness = easeOutQuad(elapsed, FADE_DURATION);
+                uint8_t colorBlend = 255 - section.brightness;
+                
+                for (int i = section.startIndex; i < section.endIndex; i++) {
+                    leds[i] = blendColors(CRGB::White, section.targetColor, colorBlend);
+                    leds[i].nscale8_video(section.brightness);
+                }
+            }
+        } else {
+            for (int i = section.startIndex; i < section.endIndex; i++) {
+                leds[i] = CRGB::Black;
+            }
         }
-        return;
     }
 
-    if (triggered) {
-        // If section is triggered, set to full brightness and record time
-        section.isActive = true;
-        section.triggerTime = millis();
-        section.brightness = 255;
-        section.targetColor = getRandomColor();  // Set new random color
-        
-        // Log the trigger and color information
-        Serial.print("Sensor ");
-        Serial.print(sectionIndex);
-        Serial.print(" triggered! Fading to color: ");
-        Serial.println(colorToHex(section.targetColor));
-        
-        // Set all LEDs in section to white at full brightness
-        for (int i = section.startIndex; i < section.endIndex; i++) {
-            leds[i] = CRGB::White;
-        }
-    } else if (section.isActive) {
-        // If section was active, check if it's time to fade
-        unsigned long elapsed = millis() - section.triggerTime;
-        if (elapsed >= FADE_DURATION) {
-            section.isActive = false;
-            section.brightness = 0;
+    // Cascade Fade Mode
+    void updateCascadeFade(LEDSection& section) {
+        if (section.isActive) {
+            unsigned long elapsed = millis() - section.triggerTime;
+            if (elapsed >= FADE_DURATION) {
+                section.isActive = false;
+                section.brightness = 0;
+                section.isAdjacent = false;
+            } else {
+                // Calculate brightness based on whether it's the main section or adjacent
+                if (section.isAdjacent) {
+                    // Adjacent sections fade at 50% brightness
+                    section.brightness = easeOutQuad(elapsed, FADE_DURATION) / 2;
+                } else {
+                    // Main section fades at full brightness
+                    section.brightness = easeOutQuad(elapsed, FADE_DURATION);
+                }
+                
+                uint8_t colorBlend = 255 - section.brightness;
+                
+                for (int i = section.startIndex; i < section.endIndex; i++) {
+                    leds[i] = blendColors(CRGB::White, section.targetColor, colorBlend);
+                    leds[i].nscale8_video(section.brightness);
+                }
+            }
         } else {
-            // Use easing function for smooth fade
-            section.brightness = easeOutQuad(elapsed, FADE_DURATION);
+            for (int i = section.startIndex; i < section.endIndex; i++) {
+                leds[i] = CRGB::Black;
+            }
         }
-        
-        // Apply brightness to all LEDs in section
-        for (int i = section.startIndex; i < section.endIndex; i++) {
-            // Blend from white to random color as it fades
-            uint8_t colorBlend = 255 - section.brightness;
-            leds[i] = blendColors(CRGB::White, section.targetColor, colorBlend);
-            // Apply gamma correction for more natural-looking fade
-            leds[i].nscale8_video(section.brightness);
-        }
+    }
+}
+
+// Function to handle section updates based on current mode
+void updateSection(LEDSection& section) {
+    switch (currentMode) {
+        case IMPACT_FADE:
+            AnimationModes::updateImpactFade(section);
+            break;
+        case CASCADE_FADE:
+            AnimationModes::updateCascadeFade(section);
+            break;
+        default:
+            AnimationModes::updateImpactFade(section);
+            break;
+    }
+}
+
+// Function to handle section triggers based on current mode
+void handleSectionTrigger(LEDSection& section, int sectionIndex) {
+    switch (currentMode) {
+        case IMPACT_FADE:
+            section.isActive = true;
+            section.triggerTime = millis();
+            section.brightness = 255;
+            section.targetColor = getRandomColor();
+            
+            // Log the trigger and color information
+            Serial.print("Sensor ");
+            Serial.print(sectionIndex);
+            Serial.print(" triggered! Fading to color: ");
+            Serial.println(colorToHex(section.targetColor));
+            
+            // Set all LEDs in section to white at full brightness
+            for (int i = section.startIndex; i < section.endIndex; i++) {
+                leds[i] = CRGB::White;
+            }
+            break;
+            
+        case CASCADE_FADE:
+            // Activate the main section
+            section.isActive = true;
+            section.isAdjacent = false;
+            section.triggerTime = millis();
+            section.brightness = 255;
+            section.targetColor = getRandomColor();
+            
+            // Log the trigger and color information
+            Serial.print("Sensor ");
+            Serial.print(sectionIndex);
+            Serial.print(" triggered! Cascade fading to color: ");
+            Serial.println(colorToHex(section.targetColor));
+            
+            // Set all LEDs in main section to white at full brightness
+            for (int i = section.startIndex; i < section.endIndex; i++) {
+                leds[i] = CRGB::White;
+            }
+            
+            // Activate previous section if it exists
+            if (sectionIndex > 0 && sections[sectionIndex - 1].isConnected) {
+                sections[sectionIndex - 1].isActive = true;
+                sections[sectionIndex - 1].isAdjacent = true;
+                sections[sectionIndex - 1].triggerTime = millis();
+                sections[sectionIndex - 1].brightness = 128; // 50% brightness
+                sections[sectionIndex - 1].targetColor = section.targetColor;
+                
+                // Set previous section LEDs to white at 50% brightness
+                for (int i = sections[sectionIndex - 1].startIndex; i < sections[sectionIndex - 1].endIndex; i++) {
+                    leds[i] = CRGB::White;
+                    leds[i].nscale8(128);
+                }
+            }
+            
+            // Activate next section if it exists
+            if (sectionIndex < numSections - 1 && sections[sectionIndex + 1].isConnected) {
+                sections[sectionIndex + 1].isActive = true;
+                sections[sectionIndex + 1].isAdjacent = true;
+                sections[sectionIndex + 1].triggerTime = millis();
+                sections[sectionIndex + 1].brightness = 128; // 50% brightness
+                sections[sectionIndex + 1].targetColor = section.targetColor;
+                
+                // Set next section LEDs to white at 50% brightness
+                for (int i = sections[sectionIndex + 1].startIndex; i < sections[sectionIndex + 1].endIndex; i++) {
+                    leds[i] = CRGB::White;
+                    leds[i].nscale8(128);
+                }
+            }
+            break;
+            
+        default:
+            break;
     }
 }
 
@@ -277,6 +406,87 @@ void logSensorDistances() {
     Serial.println();
 }
 
+// Sensor reading task
+void sensorTask(void *pvParameters) {
+    while (1) {
+        // Check multiplexer status every 10 seconds
+        if (millis() - lastStatusCheck >= STATUS_CHECK_INTERVAL) {
+            checkMultiplexerStatus();
+            lastStatusCheck = millis();
+        }
+
+        // Log distances every 5 seconds
+        if (millis() - lastDistanceLog >= DISTANCE_LOG_INTERVAL) {
+            logSensorDistances();
+            lastDistanceLog = millis();
+        }
+
+        // Check sensor distances
+        if (multiplexerConnected && sensorMux1 != nullptr) {
+            // Process each section
+            for (int section = 0; section < numSections; section++) {
+                if (sections[section].isConnected) {
+                    uint16_t distance = 0;
+                    bool triggered = false;
+                    
+                    if (sensorMux1->readDistance(section, distance)) {
+                        if (distance == 65535) {
+                            Serial.print("Sensor on channel ");
+                            Serial.print(section);
+                            Serial.println(" disconnected!");
+                            sections[section].isConnected = false;
+                            sections[section].isInitialized = false;
+                            
+                            // Take mutex before updating LEDs
+                            if (xSemaphoreTake(ledMutex, portMAX_DELAY) == pdTRUE) {
+                                for (int i = sections[section].startIndex; i < sections[section].endIndex; i++) {
+                                    leds[i] = CRGB::Black;
+                                }
+                                xSemaphoreGive(ledMutex);
+                            }
+                        } else {
+                            triggered = (distance < TRIGGER_DISTANCE);
+                            if (triggered) {
+                                handleSectionTrigger(sections[section], section);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        vTaskDelay(pdMS_TO_TICKS(SENSOR_CHECK_INTERVAL));
+    }
+}
+
+// LED update task
+void ledTask(void *pvParameters) {
+    while (1) {
+        if (xSemaphoreTake(ledMutex, portMAX_DELAY) == pdTRUE) {
+            // Update all sections based on current mode
+            for (int section = 0; section < numSections; section++) {
+                if (sections[section].isConnected) {
+                    updateSection(sections[section]);
+                }
+            }
+            
+            FastLED.show();
+            xSemaphoreGive(ledMutex);
+        }
+        
+        vTaskDelay(pdMS_TO_TICKS(LED_FRAME_UPDATE_INTERVAL));
+    }
+}
+
+// Function to change animation mode
+void setAnimationMode(AnimationMode mode) {
+    if (mode < NUM_ANIMATION_MODES) {
+        currentMode = mode;
+        Serial.print("Animation mode changed to: ");
+        Serial.println(ANIMATION_MODE_NAMES[mode]);
+    }
+}
+
 void setup() {
     // Initialize Serial for debugging
     Serial.begin(115200);
@@ -285,6 +495,9 @@ void setup() {
     
     // Initialize random seed
     random16_set_seed(analogRead(0));
+    
+    // Create mutex for LED access
+    ledMutex = xSemaphoreCreateMutex();
     
     // Initialize I2C
     Wire.begin(I2C_SDA, I2C_SCL);
@@ -322,11 +535,9 @@ void setup() {
     }
     
     if (foundMux) {
-        // Initialize multiplexer with found address
         sensorMux1 = new VL53L0XMultiplexer(muxAddr);
         if (sensorMux1->begin()) {
             Serial.println("Initializing all detected sensors...");
-            // Initialize all possible channels (0-7)
             for (uint8_t channel = 0; channel < 8; channel++) {
                 if (sensorMux1->initSensor(channel, 0)) {
                     Serial.print("Successfully initialized sensor on channel ");
@@ -342,101 +553,31 @@ void setup() {
         Serial.println("Warning: No multiplexer found, continuing without sensors");
     }
     
+    // Create tasks
+    xTaskCreatePinnedToCore(
+        sensorTask,    // Task function
+        "SensorTask",  // Task name
+        10000,        // Stack size
+        NULL,         // Task parameters
+        1,            // Task priority
+        &sensorTaskHandle,  // Task handle
+        0             // Run on core 0
+    );
+    
+    xTaskCreatePinnedToCore(
+        ledTask,      // Task function
+        "LEDTask",    // Task name
+        10000,        // Stack size
+        NULL,         // Task parameters
+        2,            // Task priority
+        &ledTaskHandle,  // Task handle
+        1             // Run on core 1
+    );
+    
     Serial.println("Setup complete!");
 }
 
 void loop() {
-    static unsigned long lastUpdate = 0;
-    static unsigned long lastSensorCheck = 0;
-    
-    // Check multiplexer status every 10 seconds
-    if (millis() - lastStatusCheck >= STATUS_CHECK_INTERVAL) {
-        checkMultiplexerStatus();
-        lastStatusCheck = millis();
-    }
-
-    // Log distances every 0.5 seconds
-    if (millis() - lastDistanceLog >= DISTANCE_LOG_INTERVAL) {
-        logSensorDistances();
-        lastDistanceLog = millis();
-    }
-
-    // Check sensor distances at regular intervals
-    if (millis() - lastSensorCheck >= SENSOR_CHECK_INTERVAL) {
-        lastSensorCheck = millis();
-        
-        // Only check sensors if multiplexer is connected
-        if (multiplexerConnected && sensorMux1 != nullptr) {
-            // Process each section
-            for (int section = 0; section < numSections; section++) {
-                if (sections[section].isConnected) {
-                    uint16_t distance = 0;
-                    bool triggered = false;
-                    
-                    if (sensorMux1->readDistance(section, distance)) {
-                        // Check for sensor disconnection (65535mm is the error value)
-                        if (distance == 65535) {
-                            Serial.print("Sensor on channel ");
-                            Serial.print(section);
-                            Serial.println(" disconnected!");
-                            sections[section].isConnected = false;
-                            sections[section].isInitialized = false;
-                            // Turn off LEDs for this section
-                            for (int i = sections[section].startIndex; i < sections[section].endIndex; i++) {
-                                leds[i] = CRGB::Black;
-                            }
-                        } else {
-                            triggered = (distance < TRIGGER_DISTANCE);
-                            // Update the LED section's trigger state
-                            updateLEDSection(sections[section], triggered, section);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // Update LED animations
-    if (millis() - lastUpdate >= LED_FRAME_UPDATE_INTERVAL) {
-        lastUpdate = millis();
-        
-        // Update all sections
-        for (int section = 0; section < numSections; section++) {
-            if (sections[section].isConnected) {
-                if (sections[section].isActive) {
-                    // If section was active, check if it's time to fade
-                    unsigned long elapsed = millis() - sections[section].triggerTime;
-                    if (elapsed >= FADE_DURATION) {
-                        sections[section].isActive = false;
-                        sections[section].brightness = 0;
-                    } else {
-                        // Use easing function for smooth fade
-                        sections[section].brightness = easeOutQuad(elapsed, FADE_DURATION);
-                        
-                        // Calculate color blend amount (inverse of brightness)
-                        uint8_t colorBlend = 255 - sections[section].brightness;
-                        
-                        // Apply color and brightness to all LEDs in section
-                        for (int i = sections[section].startIndex; i < sections[section].endIndex; i++) {
-                            // Blend from white to random color as it fades
-                            leds[i] = blendColors(CRGB::White, sections[section].targetColor, colorBlend);
-                            // Apply gamma correction for more natural-looking fade
-                            leds[i].nscale8_video(sections[section].brightness);
-                        }
-                    }
-                } else {
-                    // If section is not active, ensure LEDs are off
-                    for (int i = sections[section].startIndex; i < sections[section].endIndex; i++) {
-                        leds[i] = CRGB::Black;
-                    }
-                }
-            }
-        }
-        
-        // Show the updated LEDs
-        FastLED.show();
-    }
-    
-    // Small delay to prevent overwhelming the system
-    delay(1);
+    // Main loop is empty as tasks handle everything
+    vTaskDelay(pdMS_TO_TICKS(1000));
 }
