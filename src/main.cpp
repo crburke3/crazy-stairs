@@ -29,6 +29,7 @@
 enum AnimationMode {
     IMPACT_FADE,
     CASCADE_FADE,
+    GRADIENT_FADE,
     // Add more modes here as needed
     NUM_ANIMATION_MODES
 };
@@ -37,6 +38,7 @@ enum AnimationMode {
 const char* ANIMATION_MODE_NAMES[] = {
     "Impact Fade",
     "Cascade Fade",
+    "Gradient Fade",
     // Add more mode names here
 };
 
@@ -281,8 +283,25 @@ namespace AnimationModes {
     }
 }
 
+// Function to generate a random gradient
+void generateRandomGradient(CRGB* gradient, int length) {
+    // Generate two random colors for the gradient
+    CRGB color1 = getRandomColor();
+    CRGB color2 = getRandomColor();
+    
+    // Create gradient between the two colors
+    for (int i = 0; i < length; i++) {
+        uint8_t blend = map(i, 0, length - 1, 0, 255);
+        gradient[i] = blendColors(color1, color2, blend);
+    }
+}
+
 // Function to handle section updates based on current mode
 void updateSection(LEDSection& section) {
+    if (currentMode >= NUM_ANIMATION_MODES) {
+        currentMode = IMPACT_FADE;  // Reset to first mode if invalid
+    }
+    
     switch (currentMode) {
         case IMPACT_FADE:
             AnimationModes::updateImpactFade(section);
@@ -290,14 +309,39 @@ void updateSection(LEDSection& section) {
         case CASCADE_FADE:
             AnimationModes::updateCascadeFade(section);
             break;
-        default:
-            AnimationModes::updateImpactFade(section);
+        case GRADIENT_FADE:
+            if (section.isActive) {
+                unsigned long elapsed = millis() - section.triggerTime;
+                if (elapsed >= FADE_DURATION) {
+                    section.isActive = false;
+                    section.brightness = 0;
+                    for (int i = section.startIndex; i < section.endIndex; i++) {
+                        leds[i] = CRGB::Black;
+                    }
+                } else {
+                    uint8_t fade = easeOutQuad(elapsed, FADE_DURATION);
+                    for (int i = section.startIndex; i < section.endIndex; i++) {
+                        leds[i].nscale8_video(fade);
+                    }
+                }
+            }
             break;
     }
 }
 
 // Function to handle section triggers based on current mode
 void handleSectionTrigger(LEDSection& section, int sectionIndex) {
+    // If section 1 (index 0) is triggered, change animation mode
+    if (sectionIndex == 0) {
+        currentMode = (AnimationMode)((currentMode + 1) % NUM_ANIMATION_MODES);
+        Serial.print("Section 1 triggered - changing to mode: ");
+        Serial.println(ANIMATION_MODE_NAMES[currentMode]);
+    }
+    
+    if (currentMode >= NUM_ANIMATION_MODES) {
+        currentMode = IMPACT_FADE;  // Reset to first mode if invalid
+    }
+    
     switch (currentMode) {
         case IMPACT_FADE:
             section.isActive = true;
@@ -367,7 +411,23 @@ void handleSectionTrigger(LEDSection& section, int sectionIndex) {
             }
             break;
             
-        default:
+        case GRADIENT_FADE:
+            section.isActive = true;
+            section.triggerTime = millis();
+            section.brightness = 255;
+            
+            // Generate random gradient for this section
+            CRGB gradient[STAIR_LENGTH];
+            generateRandomGradient(gradient, STAIR_LENGTH);
+            
+            // Apply gradient to section
+            for (int i = 0; i < STAIR_LENGTH; i++) {
+                leds[section.startIndex + i] = gradient[i];
+            }
+            
+            Serial.print("Sensor ");
+            Serial.print(sectionIndex);
+            Serial.println(" triggered! Applied random gradient");
             break;
     }
 }
