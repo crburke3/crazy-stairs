@@ -12,7 +12,7 @@
 
 // Stair Configuration
 #define STAIR_LENGTH 30    // Number of LEDs per stair
-#define NUM_STAIRS 10      // Total number of stairs
+#define NUM_STAIRS 8      // Total number of stairs
 #define NUM_LEDS (STAIR_LENGTH * NUM_STAIRS)  // Total number of LEDs
 
 // LED Configuration
@@ -24,6 +24,12 @@
 #define DISTANCE_LOG_INTERVAL 5000    // Log distances every 5 seconds
 #define LED_FRAME_UPDATE_INTERVAL 1    // Update LEDs every 3ms for smoother animation (16 = 60fps, 3 = 330fps)
 #define SENSOR_CHECK_INTERVAL 50  // Check sensors every 100ms
+
+// Add these constants at the top with other defines
+#define I2C_FREQUENCY 100000  // 100kHz instead of default 100kHz
+#define I2C_TIMEOUT 1000      // 1 second timeout
+#define I2C_RETRY_DELAY 50    // 50ms between retries
+#define MAX_I2C_RETRIES 3     // Maximum number of retries per read
 
 // Animation Mode Enum
 enum AnimationMode {
@@ -73,6 +79,12 @@ SemaphoreHandle_t ledMutex = NULL;
 // Task handles
 TaskHandle_t sensorTaskHandle = NULL;
 TaskHandle_t ledTaskHandle = NULL;
+
+// Add these global variables at the top with other globals
+unsigned long lastI2CError = 0;
+const unsigned long I2C_ERROR_RECOVERY_TIME = 1000; // 1 second recovery time
+int consecutiveI2CErrors = 0;
+const int MAX_CONSECUTIVE_ERRORS = 5;
 
 // Easing function for smooth fade out (easeOutQuad)
 uint8_t easeOutQuad(unsigned long elapsed, unsigned long duration) {
@@ -135,14 +147,33 @@ void initializeLEDSections() {
 
 bool initializeSensorChannel(uint8_t channel) {
     if (sensorMux1 != nullptr && channel < numSections) {
-        if (sensorMux1->initSensor(channel, 0)) {
-            Serial.print("Successfully initialized sensor on channel ");
+        Serial.print("Attempting to initialize sensor on channel ");
+        Serial.println(channel);
+        
+        // First check if we can communicate with the sensor
+        Wire.beginTransmission(0x29);  // VL53L0X default address
+        uint8_t error = Wire.endTransmission();
+        
+        if (error == 0) {
+            Serial.print("Found VL53L0X on channel ");
             Serial.println(channel);
-            sections[channel].isInitialized = true;
-            return true;
+            sections[channel].isConnected = true;
+            
+            if (sensorMux1->initSensor(channel, 0)) {
+                Serial.print("Successfully initialized sensor on channel ");
+                Serial.println(channel);
+                sections[channel].isInitialized = true;
+                return true;
+            } else {
+                Serial.print("Failed to initialize sensor on channel ");
+                Serial.println(channel);
+                sections[channel].isInitialized = false;
+                return false;
+            }
         } else {
-            Serial.print("Failed to initialize sensor on channel ");
+            Serial.print("No VL53L0X found on channel ");
             Serial.println(channel);
+            sections[channel].isConnected = false;
             sections[channel].isInitialized = false;
             return false;
         }
@@ -172,6 +203,7 @@ void checkMultiplexerStatus() {
                 // Reset all section connection statuses
                 for (int i = 0; i < numSections; i++) {
                     sections[i].isConnected = false;
+                    sections[i].isInitialized = false;
                 }
                 
                 // Check each channel (0-7)
@@ -187,14 +219,22 @@ void checkMultiplexerStatus() {
                             Serial.print(channel);
                             Serial.println(": VL53L0X sensor detected");
                             
-                            // Update section connection status if within range
+                            // Map the channel to a section if possible
                             if (channel < numSections) {
                                 sections[channel].isConnected = true;
                                 // Initialize the sensor if it's newly connected
                                 if (!sections[channel].isInitialized) {
                                     initializeSensorChannel(channel);
                                 }
+                            } else {
+                                Serial.print("  Warning: Channel ");
+                                Serial.print(channel);
+                                Serial.println(" has a sensor but no corresponding LED section");
                             }
+                        } else {
+                            Serial.print("  Channel ");
+                            Serial.print(channel);
+                            Serial.println(": No VL53L0X sensor");
                         }
                     }
                 }
@@ -212,6 +252,24 @@ void checkMultiplexerStatus() {
         }
     } else {
         multiplexerConnected = true;
+    }
+    
+    // Print final connection status
+    Serial.println("\nFinal Sensor Status:");
+    for (int i = 0; i < numSections; i++) {
+        Serial.print("Section ");
+        Serial.print(i);
+        Serial.print(": ");
+        if (sections[i].isConnected) {
+            Serial.print("Connected");
+            if (sections[i].isInitialized) {
+                Serial.println(" and Initialized");
+            } else {
+                Serial.println(" but Not Initialized");
+            }
+        } else {
+            Serial.println("Not Connected");
+        }
     }
     
     Serial.println("==============================\n");
@@ -317,14 +375,20 @@ void updateSection(LEDSection& section) {
                 if (elapsed >= FADE_DURATION) {
                     section.isActive = false;
                     section.brightness = 0;
+                    // Keep a dim glow for debugging
                     for (int i = section.startIndex; i < section.endIndex; i++) {
-                        leds[i] = CRGB::Black;
+                        leds[i] = CRGB(5, 5, 5);  // Very dim white
                     }
                 } else {
                     uint8_t fade = easeOutQuad(elapsed, FADE_DURATION);
                     for (int i = section.startIndex; i < section.endIndex; i++) {
                         leds[i].nscale8_video(fade);
                     }
+                }
+            } else {
+                // Keep a dim glow for debugging
+                for (int i = section.startIndex; i < section.endIndex; i++) {
+                    leds[i] = CRGB(5, 5, 5);  // Very dim white
                 }
             }
             break;
@@ -334,8 +398,9 @@ void updateSection(LEDSection& section) {
                 if (elapsed >= FADE_DURATION) {
                     section.isActive = false;
                     section.brightness = 0;
+                    // Keep a dim glow for debugging
                     for (int i = section.startIndex; i < section.endIndex; i++) {
-                        leds[i] = CRGB::Black;
+                        leds[i] = CRGB(5, 5, 5);  // Very dim white
                     }
                 } else {
                     // Flash between red and blue
@@ -346,6 +411,11 @@ void updateSection(LEDSection& section) {
                     for (int i = section.startIndex; i < section.endIndex; i++) {
                         leds[i] = color;
                     }
+                }
+            } else {
+                // Keep a dim glow for debugging
+                for (int i = section.startIndex; i < section.endIndex; i++) {
+                    leds[i] = CRGB(5, 5, 5);  // Very dim white
                 }
             }
             break;
@@ -482,7 +552,7 @@ void logSensorDistances() {
 
     // Check each section's sensor
     for (int i = 0; i < numSections; i++) {
-        if (sections[i].isConnected) {
+        if (sections[i].isConnected && sections[i].isInitialized) {
             uint16_t distance = 0;
             if (sensorMux1->readDistance(i, distance)) {
                 Serial.print("S");
@@ -497,6 +567,10 @@ void logSensorDistances() {
                 Serial.print(i);
                 Serial.print(":FAIL ");
             }
+        } else if (sections[i].isConnected) {
+            Serial.print("S");
+            Serial.print(i);
+            Serial.print(":UNINIT ");
         }
     }
 
@@ -506,13 +580,65 @@ void logSensorDistances() {
     Serial.println();
 }
 
-// Sensor reading task
+// Add this new function for robust I2C recovery
+void recoverI2CBus() {
+    Serial.println("Performing full I2C bus recovery...");
+    
+    // 1. End I2C communication
+    Wire.end();
+    delay(100);
+    
+    // 2. Reset pins to default state
+    pinMode(I2C_SDA, INPUT);
+    pinMode(I2C_SCL, INPUT);
+    delay(100);
+    
+    // 3. Manually clock the bus to clear any stuck devices
+    pinMode(I2C_SCL, OUTPUT);
+    for(int i = 0; i < 10; i++) {
+        digitalWrite(I2C_SCL, HIGH);
+        delayMicroseconds(5);
+        digitalWrite(I2C_SCL, LOW);
+        delayMicroseconds(5);
+    }
+    
+    // 4. Re-enable pull-ups and restart I2C
+    pinMode(I2C_SDA, INPUT_PULLUP);
+    pinMode(I2C_SCL, INPUT_PULLUP);
+    delay(100);
+    
+    Wire.begin(I2C_SDA, I2C_SCL);
+    Wire.setClock(I2C_FREQUENCY);
+    Wire.setTimeout(I2C_TIMEOUT);
+    
+    // 5. Reinitialize multiplexer if it exists
+    if (sensorMux1 != nullptr) {
+        if (sensorMux1->begin()) {
+            Serial.println("Multiplexer reinitialized successfully");
+            // Reinitialize all connected sensors
+            for (uint8_t channel = 0; channel < 8; channel++) {
+                if (sections[channel].isConnected) {
+                    if (sensorMux1->initSensor(channel, 0)) {
+                        Serial.print("Reinitialized sensor on channel ");
+                        Serial.println(channel);
+                    }
+                }
+            }
+        } else {
+            Serial.println("Failed to reinitialize multiplexer");
+        }
+    }
+}
+
+// Modify the sensorTask function
 void sensorTask(void *pvParameters) {
     while (1) {
-        // Check multiplexer status every 10 seconds
-        if (millis() - lastStatusCheck >= STATUS_CHECK_INTERVAL) {
+        // Check multiplexer status every 10 seconds or after I2C errors
+        if (millis() - lastStatusCheck >= STATUS_CHECK_INTERVAL || consecutiveI2CErrors >= MAX_CONSECUTIVE_ERRORS) {
+            Serial.println("\nRestarting sensor scan due to timeout or errors...");
             checkMultiplexerStatus();
             lastStatusCheck = millis();
+            consecutiveI2CErrors = 0;  // Reset error counter after scan
         }
 
         // Log distances every 5 seconds
@@ -525,30 +651,54 @@ void sensorTask(void *pvParameters) {
         if (multiplexerConnected && sensorMux1 != nullptr) {
             // Process each section
             for (int section = 0; section < numSections; section++) {
-                if (sections[section].isConnected) {
+                if (sections[section].isConnected && sections[section].isInitialized) {
                     uint16_t distance = 0;
-                    bool triggered = false;
+                    bool readSuccess = false;
                     
-                    if (sensorMux1->readDistance(section, distance)) {
-                        if (distance == 65535) {
-                            Serial.print("Sensor on channel ");
-                            Serial.print(section);
-                            Serial.println(" disconnected!");
-                            sections[section].isConnected = false;
-                            sections[section].isInitialized = false;
+                    // Try multiple times to read the sensor
+                    for (int retry = 0; retry < MAX_I2C_RETRIES && !readSuccess; retry++) {
+                        if (retry > 0) {
+                            delay(I2C_RETRY_DELAY);
+                        }
+                        
+                        readSuccess = sensorMux1->readDistance(section, distance);
+                        
+                        if (readSuccess) {
+                            consecutiveI2CErrors = 0;
                             
-                            // Take mutex before updating LEDs
-                            if (xSemaphoreTake(ledMutex, portMAX_DELAY) == pdTRUE) {
-                                for (int i = sections[section].startIndex; i < sections[section].endIndex; i++) {
-                                    leds[i] = CRGB::Black;
+                            if (distance == 65535) {
+                                Serial.print("Sensor on channel ");
+                                Serial.print(section);
+                                Serial.println(" disconnected!");
+                                sections[section].isConnected = false;
+                                sections[section].isInitialized = false;
+                                
+                                if (xSemaphoreTake(ledMutex, portMAX_DELAY) == pdTRUE) {
+                                    for (int i = sections[section].startIndex; i < sections[section].endIndex; i++) {
+                                        leds[i] = CRGB::Black;
+                                    }
+                                    xSemaphoreGive(ledMutex);
                                 }
-                                xSemaphoreGive(ledMutex);
-                            }
-                        } else {
-                            triggered = (distance < TRIGGER_DISTANCE);
-                            if (triggered) {
+                            } else if (distance < TRIGGER_DISTANCE) {
                                 handleSectionTrigger(sections[section], section);
                             }
+                            break;
+                        }
+                    }
+                    
+                    if (!readSuccess) {
+                        consecutiveI2CErrors++;
+                        lastI2CError = millis();
+                        
+                        if (consecutiveI2CErrors == 1) {
+                            Serial.print("I2C read error on channel ");
+                            Serial.println(section);
+                        }
+                        
+                        // If we've hit the error threshold, break out of the loop
+                        // The next iteration will trigger a full rescan
+                        if (consecutiveI2CErrors >= MAX_CONSECUTIVE_ERRORS) {
+                            break;
                         }
                     }
                 }
@@ -599,8 +749,14 @@ void setup() {
     // Create mutex for LED access
     ledMutex = xSemaphoreCreateMutex();
     
-    // Initialize I2C
+    // Initialize I2C with custom configuration
     Wire.begin(I2C_SDA, I2C_SCL);
+    Wire.setClock(I2C_FREQUENCY);
+    Wire.setTimeout(I2C_TIMEOUT);
+    
+    // Enable internal pull-up resistors
+    pinMode(I2C_SDA, INPUT_PULLUP);
+    pinMode(I2C_SCL, INPUT_PULLUP);
     
     // Initialize LED power pin
     pinMode(POWER_PIN, OUTPUT);
@@ -609,6 +765,37 @@ void setup() {
     // Initialize FastLED
     FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
     FastLED.setBrightness(255);
+    FastLED.clear();
+    
+    // LED Test Sequence
+    Serial.println("\nRunning LED Test Sequence...");
+    
+    // Turn all LEDs white
+    Serial.println("Testing all LEDs - White");
+    fill_solid(leds, NUM_LEDS, CRGB::White);
+    FastLED.show();
+    delay(1000);
+    
+    // Turn all LEDs red
+    Serial.println("Testing all LEDs - Red");
+    fill_solid(leds, NUM_LEDS, CRGB::Red);
+    FastLED.show();
+    delay(1000);
+    
+    // Turn all LEDs green
+    Serial.println("Testing all LEDs - Green");
+    fill_solid(leds, NUM_LEDS, CRGB::Green);
+    FastLED.show();
+    delay(1000);
+    
+    // Turn all LEDs blue
+    Serial.println("Testing all LEDs - Blue");
+    fill_solid(leds, NUM_LEDS, CRGB::Blue);
+    FastLED.show();
+    delay(1000);
+    
+    // Clear all LEDs
+    Serial.println("LED Test Complete");
     FastLED.clear();
     FastLED.show();
     
@@ -638,10 +825,13 @@ void setup() {
         sensorMux1 = new VL53L0XMultiplexer(muxAddr);
         if (sensorMux1->begin()) {
             Serial.println("Initializing all detected sensors...");
+            // First check which sensors are connected
+            checkMultiplexerStatus();
+            
+            // Then initialize only the connected sensors
             for (uint8_t channel = 0; channel < 8; channel++) {
-                if (sensorMux1->initSensor(channel, 0)) {
-                    Serial.print("Successfully initialized sensor on channel ");
-                    Serial.println(channel);
+                if (sections[channel].isConnected) {
+                    initializeSensorChannel(channel);
                 }
             }
         } else {
