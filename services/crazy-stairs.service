@@ -1,0 +1,19 @@
+[Unit]
+Description=Crazy Stairs LED and Sound Control
+After=bluetooth.service
+Wants=bluetooth.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+SupplementaryGroups=i2c gpio
+WorkingDirectory=/home/connor/crazy-stairs
+Environment=VIRTUAL_ENV=/home/connor/crazy-stairs/venv
+Environment=PATH=/home/connor/crazy-stairs/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/home/connor/crazy-stairs/venv/bin/python3 /home/connor/crazy-stairs/main.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target 
