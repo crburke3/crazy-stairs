@@ -5,9 +5,10 @@ from vl53l0x_multiplexer import VL53L0XMultiplexer
 from rpi_ws281x import PixelStrip, Color
 from bluetooth_audio import setup_bluetooth_audio
 import os
+import colorsys
 
 # LED strip configuration
-LED_COUNT = 300        # Number of LED pixels
+LED_COUNT = 1000        # Number of LED pixels
 LED_PIN = 18          # GPIO18 (PWM0) - DO NOT use TXD/GPIO14
 LED_FREQ_HZ = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA = 10          # DMA channel to use for generating signal
@@ -71,6 +72,16 @@ def clear_all_lights(strip):
         strip.setPixelColor(i, Color(0, 0, 0))
     strip.show()
 
+def rainbow_fade(strip):
+    """Fade all LEDs through a smooth rainbow effect."""
+    while True:
+        for i in range(strip.numPixels()):
+            hue = (i / strip.numPixels() + time.time() * 0.1) % 1.0
+            r, g, b = [int(c * 255) for c in colorsys.hsv_to_rgb(hue, 1.0, 1.0)]
+            strip.setPixelColor(i, Color(r, g, b))
+        strip.show()
+        time.sleep(0.01)
+
 def main():
     # Create multiplexer instance
     print("Initializing VL53L0X multiplexer...")
@@ -111,57 +122,63 @@ def main():
         else:
             bt_audio.set_sound_file(sound_path)
     
-    primary_sensor = None
     last_update = time.time()
     last_sound_trigger = 0  # Track last time sound was played
     was_triggered = False  # Track if sensor was previously triggered
     update_interval = 0.02  # 20ms refresh rate (50Hz)
     sensor_retry_interval = 5.0  # How often to retry initializing sensors
     last_sensor_init = 0
+    active_sensors = []  # List of working sensor channel numbers
+    current_sensor_idx = 0  # Index into active_sensors for round-robin reading
     
-    print("\nWaiting for sensors to be connected...\n")
+    print("\nInitializing sensors...")
     
     try:
         while True:
             current_time = time.time()
             
-            # Try to initialize sensors if we don't have a working one
-            if primary_sensor is None and current_time - last_sensor_init >= sensor_retry_interval:
+            # Try to initialize sensors if we don't have any working ones
+            if len(active_sensors) == 0 and current_time - last_sensor_init >= sensor_retry_interval:
                 print("\nTrying to initialize sensors...")
                 
                 # Try each channel one at a time
-                for channel in range(8):
-                    print(f"\nTrying channel {channel}...")
+                for channel in range(16):  # Now checking all 16 channels (2 multiplexers * 8 channels)
+                    mux_num = channel // 8 + 1  # Multiplexer number (1 or 2)
+                    local_channel = channel % 8  # Local channel on the multiplexer (0-7)
+                    print(f"\nTrying multiplexer {mux_num} channel {local_channel} (global channel {channel})...")
                     if multiplexer.init_sensor(channel):
-                        print(f"Sensor {channel} initialized successfully")
-                        if primary_sensor is None:
-                            primary_sensor = channel
-                            print(f"Using sensor {channel} as primary sensor for LED control")
-                            break  # Stop after finding first working sensor
-                    else:
-                        print(f"Sensor {channel} initialization failed")
+                        print(f"Sensor on multiplexer {mux_num} channel {local_channel} initialized successfully")
+                        active_sensors.append(channel)
                 
-                if primary_sensor is None:
+                if len(active_sensors) == 0:
                     print("\nNo working sensors found. Will retry in 5 seconds...")
                 else:
-                    print("\nStarting sensor and LED control loop...\n")
+                    print(f"\nFound {len(active_sensors)} working sensors:")
+                    for channel in active_sensors:
+                        mux_num = channel // 8 + 1
+                        local_channel = channel % 8
+                        print(f"- Multiplexer {mux_num} channel {local_channel} (global channel {channel})")
+                    print("\nStarting sensor and LED control loop...")
                 
                 last_sensor_init = current_time
                 continue
             
-            # Only update if we have a working sensor and enough time has passed
-            if primary_sensor is not None and current_time - last_update >= update_interval:
-                # Read primary sensor
-                primary_distance = multiplexer.read_range(primary_sensor)
+            # Only update if we have working sensors and enough time has passed
+            if len(active_sensors) > 0 and current_time - last_update >= update_interval:
+                # Read from next sensor in round-robin fashion
+                channel = active_sensors[current_sensor_idx]
+                mux_num = channel // 8 + 1
+                local_channel = channel % 8
+                distance = multiplexer.read_range(channel)
                 
-                if primary_distance is not None and primary_distance < MAX_DISTANCE:
-                    # Update all LED segments based on primary sensor distance
-                    color = get_color_from_distance(primary_distance)
+                if distance is not None and distance < MAX_DISTANCE:
+                    # Update all LED segments based on this sensor's distance
+                    color = get_color_from_distance(distance)
                     set_all_stair_lights(strip, color)
                     
                     # Check if sensor is triggered and enough time has passed since last sound
-                    is_triggered = primary_distance < TRIGGER_DISTANCE
-                    print(f"\nTrigger check: distance={primary_distance:.1f}mm, threshold={TRIGGER_DISTANCE}mm")
+                    is_triggered = distance < TRIGGER_DISTANCE
+                    print(f"\nMultiplexer {mux_num} Channel {local_channel}: distance={distance:.1f}mm, threshold={TRIGGER_DISTANCE}mm")
                     print(f"Was triggered: {was_triggered}, Is triggered: {is_triggered}")
                     print(f"Time since last sound: {current_time - last_sound_trigger:.1f}s")
                     
@@ -169,29 +186,28 @@ def main():
                        bt_audio and bt_audio.sound_file and \
                        current_time - last_sound_trigger >= SOUND_COOLDOWN:
                         print("Playing sound...")
-                        bt_audio.play_sound()
+                        # bt_audio.play_sound()
                         last_sound_trigger = current_time
+                        print("Skipping playing the audio right now.")
+                        # return  # Skip playing audio after trigger
                     was_triggered = is_triggered
                 else:
                     # Turn off all LEDs if distance is invalid or too far
                     clear_all_lights(strip)
                     was_triggered = False
-                    # If we got an invalid reading, check if sensor is still working
-                    if primary_distance is None:
-                        print(f"\nLost connection to sensor {primary_sensor}. Will try to reinitialize...")
-                        primary_sensor = None
+                    # If we got an invalid reading, remove this sensor from active list
+                    if distance is None:
+                        print(f"\nLost connection to multiplexer {mux_num} channel {local_channel}")
+                        active_sensors.remove(channel)
+                        if len(active_sensors) > 0:
+                            current_sensor_idx = current_sensor_idx % len(active_sensors)
+                        continue
                 
                 # Update LED strip
                 strip.show()
                 
-                # Print results (less frequently to reduce console spam)
-                if int(current_time * 2) != int(last_update * 2):  # Update every 500ms
-                    if primary_distance is not None:
-                        status = "TRIGGERED" if primary_distance < TRIGGER_DISTANCE else "clear"
-                        color = "RED" if primary_distance < MIN_DISTANCE else (
-                            "BLUE" if primary_distance > MAX_DISTANCE else "PURPLE"
-                        )
-                        print(f"Sensor {primary_sensor}: {primary_distance:.1f}mm ({status}) - {color}")
+                # Move to next sensor
+                current_sensor_idx = (current_sensor_idx + 1) % len(active_sensors)
                 
                 last_update = current_time
             else:
@@ -204,4 +220,6 @@ def main():
         strip.show()
 
 if __name__ == "__main__":
+    strip = init_led_strip()
+    rainbow_fade(strip)
     main() 
