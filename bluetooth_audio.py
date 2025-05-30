@@ -4,6 +4,9 @@ import subprocess
 import time
 import os
 import re
+import pygame
+
+os.environ['SDL_AUDIODRIVER'] = 'dsp'
 
 class BluetoothAudio:
     def __init__(self, device_mac=None, device_name=None):
@@ -11,6 +14,8 @@ class BluetoothAudio:
         self.device_mac = device_mac
         self.device_name = device_name
         self.connected = False
+        # Initialize pygame mixer
+        pygame.mixer.init()
         
     def set_sound_file(self, file_path):
         """Set the sound file to be played when triggered"""
@@ -27,7 +32,7 @@ class BluetoothAudio:
             # If no MAC address provided, try to find the speaker by name
             if not self.device_mac and self.device_name:
                 print(f"Looking for Bluetooth device with name: {self.device_name}")
-                result = subprocess.run(['bluetoothctl', 'devices'], 
+                result = subprocess.run(['sudo', 'bluetoothctl', 'devices'], 
                                      stdout=subprocess.PIPE, 
                                      stderr=subprocess.PIPE,
                                      text=True)
@@ -43,7 +48,7 @@ class BluetoothAudio:
                 return False
             
             # Check if already connected
-            result = subprocess.run(['bluetoothctl', 'info', self.device_mac],
+            result = subprocess.run(['sudo','bluetoothctl', 'info', self.device_mac],
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE,
                                  text=True)
@@ -56,7 +61,7 @@ class BluetoothAudio:
             print(f"Attempting to connect to Bluetooth device: {self.device_mac}")
             
             # Power on Bluetooth if needed
-            subprocess.run(['bluetoothctl', 'power', 'on'])
+            subprocess.run(['sudo', 'bluetoothctl', 'power', 'on'])
             time.sleep(1)
             
             # Try to connect
@@ -64,7 +69,7 @@ class BluetoothAudio:
             for attempt in range(max_attempts):
                 print(f"Connection attempt {attempt + 1}/{max_attempts}")
                 
-                result = subprocess.run(['bluetoothctl', 'connect', self.device_mac],
+                result = subprocess.run(['sudo', 'bluetoothctl', 'connect', self.device_mac],
                                      stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE,
                                      text=True)
@@ -102,30 +107,28 @@ class BluetoothAudio:
         
         try:
             print(f"Attempting to play sound: {self.sound_file}")
-            result = subprocess.run(['paplay', '--server=/run/user/1000/pulse/native', self.sound_file], 
-                                 stdout=subprocess.PIPE, 
-                                 stderr=subprocess.PIPE,
-                                 env={'XDG_RUNTIME_DIR': '/run/user/1000'})
             
-            # If playback fails, try reconnecting once
-            if result.returncode != 0:
-                print("Playback failed, attempting to reconnect...")
-                if self.connect_bluetooth():
-                    # Retry playback after reconnection
-                    result = subprocess.run(['paplay', '--server=/run/user/1000/pulse/native', self.sound_file], 
-                                         stdout=subprocess.PIPE, 
-                                         stderr=subprocess.PIPE,
-                                         env={'XDG_RUNTIME_DIR': '/run/user/1000'})
-            
-            if result.returncode != 0:
-                print(f"Error playing sound. Return code: {result.returncode}")
-                print(f"Error output: {result.stderr.decode()}")
-                self.connected = False
-            else:
+            try:
+                # Load and play the sound using pygame
+                sound = pygame.mixer.Sound(self.sound_file)
+                sound.play()
+                
+                # Wait for the sound to finish playing
+                while pygame.mixer.get_busy():
+                    time.sleep(0.1)
+                
                 print("Sound played successfully")
-            return result.returncode == 0
+                return True
+                
+            except pygame.error as e:
+                print(f"Pygame error playing sound: {e}")
+                return False
+            except Exception as e:
+                print(f"Unexpected error playing sound: {e}")
+                return False
+            
         except Exception as e:
-            print(f"Error playing sound: {e}")
+            print(f"Error in play_sound: {e}")
             self.connected = False
             return False
 
@@ -138,7 +141,7 @@ def setup_bluetooth_audio(device_name="JBL GO 2+"):
         BluetoothAudio instance if successful, None otherwise.
     """
     print(f"\nSetting up Bluetooth audio for device: {device_name}")
-    
+    print(os.getcwd())
     bt_audio = BluetoothAudio(device_name=device_name)
     
     if bt_audio.connect_bluetooth():

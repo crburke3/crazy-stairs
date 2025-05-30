@@ -3,3 +3,6 @@ adafruit-circuitpython-vl53l0x
 adafruit-circuitpython-tca9548a 
 rpi-ws281x
 RPi.GPIO 
+numpy
+scipy
+pygame

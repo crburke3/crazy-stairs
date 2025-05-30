@@ -6,6 +6,10 @@ from rpi_ws281x import PixelStrip, Color
 from bluetooth_audio import setup_bluetooth_audio
 import os
 import colorsys
+import numpy as np
+from scipy.io import wavfile
+import json
+import subprocess
 
 # LED strip configuration
 LED_PIN = 18          # GPIO18 (PWM0) - DO NOT use TXD/GPIO14
@@ -124,7 +128,8 @@ def test_led_strip(strip):
         print(f"Fading in Stair {stair_num}: LEDs {start_led}-{end_led} ({end_led - start_led + 1} LEDs)")
         
         # Fade in effect (5 steps instead of 10, faster steps)
-        for brightness in range(0, 256, 51):  # Steps of 51 to reach 255 in 5 steps
+        for brightness in range(0, 256, 150):  # Steps of 51 to reach 255 in 5 steps
+        
             # Calculate color with current brightness
             r = int((color >> 16 & 0xFF) * brightness / 255)
             g = int((color >> 8 & 0xFF) * brightness / 255)
@@ -142,7 +147,7 @@ def test_led_strip(strip):
     
     # Keep all stairs lit for 5 seconds
     print("\nAll stairs are now lit with cold-to-hot gradient. Keeping lit for 5 seconds...")
-    time.sleep(5)
+    time.sleep(1)
     
     # Turn off all LEDs
     print("\nTurning off all LEDs")
@@ -150,8 +155,72 @@ def test_led_strip(strip):
     print("LED test complete")
 
 # Sound configuration
-SOUND_FILE = "stair_trigger.wav"  # Sound file to play when triggered
+SOUND_FILE = "/home/connor/crazy-stairs/stair_trigger.wav"  # Sound file to play when triggered
 SOUND_COOLDOWN = 2.0  # Minimum time between sound triggers in seconds
+TONE_DURATION = 0.25  # Duration of each tone in seconds
+SAMPLE_RATE = 44100   # Standard audio sample rate
+TONE_CACHE_DIR = "tone_cache"  # Directory to store generated tones
+
+# Define frequencies for each stair (in Hz)
+STAIR_FREQUENCIES = {
+    1: 440,   # A4
+    2: 494,   # B4
+    3: 523,   # C5
+    4: 587,   # D5
+    5: 659,   # E5
+    6: 698,   # F5
+    7: 784,   # G5
+    8: 880,   # A5
+    9: 988,   # B5
+    10: 1047, # C6
+    11: 1175, # D6
+    12: 1319, # E6
+    13: 1397, # F6
+    14: 1568, # G6
+}
+
+def generate_tone(frequency, duration=TONE_DURATION, sample_rate=SAMPLE_RATE):
+    """Generate a sine wave tone of specified frequency and duration.
+    
+    Args:
+        frequency: Frequency of the tone in Hz
+        duration: Duration of the tone in seconds
+        sample_rate: Audio sample rate in Hz
+        
+    Returns:
+        numpy array containing the audio samples
+    """
+    t = np.linspace(0, duration, int(sample_rate * duration), False)
+    tone = np.sin(2 * np.pi * frequency * t)
+    
+    # Apply fade in/out to avoid clicks
+    fade_duration = int(0.01 * sample_rate)  # 10ms fade
+    fade_in = np.linspace(0, 1, fade_duration)
+    fade_out = np.linspace(1, 0, fade_duration)
+    
+    tone[:fade_duration] *= fade_in
+    tone[-fade_duration:] *= fade_out
+    
+    # Convert to 16-bit PCM
+    tone = np.int16(tone * 32767)
+    return tone
+
+def ensure_tone_cache():
+    """Ensure the tone cache directory exists and generate all tones."""
+    if not os.path.exists(TONE_CACHE_DIR):
+        os.makedirs(TONE_CACHE_DIR)
+    
+    # Generate and save tones for each stair
+    for stair_num, frequency in STAIR_FREQUENCIES.items():
+        tone_file = os.path.join(TONE_CACHE_DIR, f"stair_{stair_num}.wav")
+        if not os.path.exists(tone_file):
+            tone = generate_tone(frequency)
+            wavfile.write(tone_file, SAMPLE_RATE, tone)
+            print(f"Generated tone for stair {stair_num} ({frequency}Hz)")
+
+def get_tone_file_for_stair(stair_num):
+    """Get the path to the tone file for a given stair number."""
+    return os.path.join(TONE_CACHE_DIR, f"stair_{stair_num}.wav")
 
 def init_led_strip():
     """Initialize the LED strip. Returns None if initialization fails."""
@@ -256,7 +325,59 @@ def print_sensor_status_table(active_sensors, sensor_states, current_distances):
     print("└─────────────┴─────────────┴────────────┴──────────┴───────────┴──────────┘")
     print(f"\nTrigger threshold: {TRIGGER_DISTANCE:.1f}mm")
 
+def fade_stair_leds(strip, stair_num, target_brightness, fade_steps=10, fade_delay=0.001):
+    """Fade a stair's LEDs to a target brightness level.
+    
+    Args:
+        strip: LED strip object
+        stair_num: Stair number to fade
+        target_brightness: Target brightness (0-255)
+        fade_steps: Number of steps for fade
+        fade_delay: Delay between steps in seconds
+    """
+    if strip is None or stair_num not in STAIR_LED_COUNTS:
+        return
+        
+    # Calculate LED range for this stair
+    start_led = sum(STAIR_LED_COUNTS[i] for i in range(1, stair_num))
+    end_led = start_led + STAIR_LED_COUNTS[stair_num] - 1
+    
+    # Get current brightness of first LED in stair (assuming all LEDs in stair have same brightness)
+    current_color = strip.getPixelColor(start_led)
+    current_brightness = max(
+        (current_color >> 16) & 0xFF,  # Red
+        (current_color >> 8) & 0xFF,   # Green
+        current_color & 0xFF           # Blue
+    )
+    
+    # Calculate step size
+    step_size = (target_brightness - current_brightness) / fade_steps
+    
+    # Fade to target brightness
+    for step in range(fade_steps):
+        brightness = int(current_brightness + (step_size * (step + 1)))
+        color = Color(brightness, 0, brightness)  # Purple color with current brightness
+        
+        for i in range(start_led, end_led + 1):
+            strip.setPixelColor(i, color)
+        strip.show()
+        time.sleep(fade_delay)
+
+def set_volume_to_max():
+    """Set the Raspberry Pi's volume to maximum."""
+    try:
+        # Set ALSA volume to 30%
+        subprocess.run(['amixer', 'set', 'Master', '30%'], check=True)
+        # Set ALSA volume to unmuted
+        subprocess.run(['amixer', 'set', 'Master', 'unmute'], check=True)
+        print("Volume set to 30%")
+    except subprocess.CalledProcessError as e:
+        print(f"Warning: Failed to set volume: {e}")
+    except Exception as e:
+        print(f"Warning: Error setting volume: {e}")
+
 def main():
+    
     # Create multiplexer instance
     print("Initializing VL53L0X multiplexer...")
     multiplexer = VL53L0XMultiplexer()
@@ -271,24 +392,35 @@ def main():
     else:
         print("Skipping LED initialization and test pattern")
     
-    # Set up Bluetooth audio
+    # Set up Bluetooth audio and generate tones
     print("\nSetting up Bluetooth audio...")
     bt_audio = setup_bluetooth_audio()
     if bt_audio:
-        # Set the sound file
+        # Generate and cache all tones
+        print("Generating tone cache...")
+        # set_volume_to_max()
+        # ensure_tone_cache()
+        # Play test sound to verify audio system
+        print("\nPlaying test sound to verify audio system...")
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        sound_path = os.path.join(script_dir, SOUND_FILE)
-        if not os.path.exists(sound_path):
-            print(f"Warning: Sound file {sound_path} not found")
-            print("Please place an MP3 file named 'stair_trigger.mp3' in the same directory")
+        test_sound_path = os.path.join(script_dir, SOUND_FILE)
+        if os.path.exists(test_sound_path):
+            print("Found audio file to play: ", test_sound_path)
+            bt_audio.set_sound_file(test_sound_path)
+            print("initiating test sound")
+            bt_audio.play_sound()
+            print("Test sound played successfully")
         else:
-            bt_audio.set_sound_file(sound_path)
-    
+            print(f"Warning: Test sound file {test_sound_path} not found")
+    else:
+        print("Warning: Bluetooth audio not available")
+    print("Waiting 5 seconds to start the main loop")
+    time.sleep(5)
     last_update = time.time()
     last_sound_trigger = 0  # Track last time sound was played
     last_table_update = 0  # Track when we last updated the table
-    table_update_interval = 0.05  # Update table 20 times per second (reduced from 0.1)
-    update_interval = 0.01  # 10ms refresh rate (100Hz) (reduced from 0.02)
+    table_update_interval = 0.05  # Update table 20 times per second
+    update_interval = 0.01  # 10ms refresh rate (100Hz)
     sensor_retry_interval = 5.0  # How often to retry initializing sensors
     last_sensor_init = 0
     active_sensors = []  # List of working sensor channel numbers
@@ -300,30 +432,21 @@ def main():
     
     print("\nInitializing sensors...")
     
-    # For LED color cycling
-    hue = 0.0
-    color_speed = 0.001  # Adjust this to change color cycle speed
-    
     try:
         while True:
             current_time = time.time()
-            
-            # Update LED colors for debugging
-            if strip is not None:
-                cycle_all_leds(strip, hue)
-                hue = (hue + color_speed) % 1.0  # Keep hue between 0 and 1
             
             # Try to initialize sensors if we don't have any working ones
             if len(active_sensors) == 0 and current_time - last_sensor_init >= sensor_retry_interval:
                 print("\nTrying to initialize sensors...")
                 
                 # Try each channel one at a time
-                for channel in range(16):  # Now checking all 16 channels (2 multiplexers * 8 channels)
-                    mux_num = channel // 8 + 1  # Multiplexer number (1 or 2)
-                    local_channel = channel % 8  # Local channel on the multiplexer (0-7)
+                for channel in range(16):
+                    mux_num = channel // 8 + 1
+                    local_channel = channel % 8
                     if multiplexer.init_sensor(channel):
                         active_sensors.append(channel)
-                        sensor_states[channel] = False  # Initialize as not triggered
+                        sensor_states[channel] = False
                 
                 if len(active_sensors) == 0:
                     print("\nNo working sensors found. Will retry in 5 seconds...")
@@ -345,15 +468,29 @@ def main():
                     was_triggered = sensor_states[channel]
                     is_triggered = distance < TRIGGER_DISTANCE
                     
-                    # Only update state and play sound if state changed
+                    # If state changed, update LED and play sound
                     if is_triggered != was_triggered:
                         sensor_states[channel] = is_triggered
-                        if is_triggered and bt_audio and bt_audio.sound_file and \
-                           current_time - last_sound_trigger >= SOUND_COOLDOWN:
-                            print("Playing sound...")
-                            # bt_audio.play_sound()
-                            last_sound_trigger = current_time
-                            print("Skipping playing the audio right now.")
+                        
+                        # Get corresponding stair number
+                        stair_num = STAIR_MAPPING.get(channel)
+                        if stair_num is not None:
+                            if strip is not None:
+                                if is_triggered:
+                                    # Fade in over 0.5 seconds (50 steps, 10ms delay)
+                                    fade_stair_leds(strip, stair_num, 255, fade_steps=5, fade_delay=0.01)
+                                else:
+                                    # Fade out slowly (20 steps, 2ms delay)
+                                    fade_stair_leds(strip, stair_num, 0, fade_steps=5, fade_delay=0.002)
+                            
+                            # Play tone when triggered
+                            if is_triggered and bt_audio and current_time - last_sound_trigger >= SOUND_COOLDOWN:
+                                tone_file = get_tone_file_for_stair(stair_num)
+                                if os.path.exists(tone_file):
+                                    bt_audio.set_sound_file(tone_file)
+                                    bt_audio.play_sound()
+                                    last_sound_trigger = current_time
+                                    print(f"Playing tone for stair {stair_num}")
                 else:
                     # If we got an invalid reading, remove this sensor from active list
                     active_sensors.remove(channel)
