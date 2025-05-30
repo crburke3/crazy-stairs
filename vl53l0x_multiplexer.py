@@ -79,7 +79,7 @@ class VL53L0XMultiplexer:
         for addr, tca in self.tcas:
             if tca is not None:  # Only try to disable channels on working multiplexers
                 self.i2c.writeto(addr, bytes([0]))
-        time.sleep(0.1)  # Give time for channels to settle
+        time.sleep(0.01)  # Reduced from 0.1s to 0.01s
         
     def _select_channel(self, global_channel):
         """Select a specific channel and disable all others.
@@ -102,7 +102,7 @@ class VL53L0XMultiplexer:
         # Then enable the selected channel on the correct multiplexer
         addr = self.tcas[mux_idx][0]
         self.i2c.writeto(addr, bytes([1 << local_channel]))
-        time.sleep(0.1)  # Give time for channel to settle
+        time.sleep(0.01)  # Reduced from 0.1s to 0.01s
         return True
             
     def init_sensor(self, global_channel):
@@ -133,8 +133,8 @@ class VL53L0XMultiplexer:
             i2c_channel = self.tcas[mux_idx][1][local_channel]
             sensor = adafruit_vl53l0x.VL53L0X(i2c_channel)
             
-            # Configure for long range mode
-            sensor.measurement_timing_budget = 33000  # 33ms timing budget
+            # Configure for faster readings
+            sensor.measurement_timing_budget = 20000  # Reduced from 33000 to 20000 (20ms)
             
             # Store sensor object
             self.sensors[global_channel] = sensor
