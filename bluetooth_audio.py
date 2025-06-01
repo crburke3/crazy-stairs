@@ -6,23 +6,31 @@ import os
 import re
 import pygame
 
-os.environ['SDL_AUDIODRIVER'] = 'dsp'
-
+os.environ['SDL_AUDIODRIVER'] = 'alsa'
 class BluetoothAudio:
     def __init__(self, device_mac=None, device_name=None):
-        self.sound_file = None
         self.device_mac = device_mac
         self.device_name = device_name
         self.connected = False
-        # Initialize pygame mixer
-        pygame.mixer.init()
+        # Initialize pygame and its mixer with multiple channels
+        pygame.init()
+        pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=512)
+        # Reserve 14 channels (one for each stair)
+        pygame.mixer.set_num_channels(14)
+        # Store sound objects for each stair
+        self.sounds = {}
+        # Load all harp sounds
+        for i in range(1, 15):
+            sound_file = f"stair_sounds/harp/harp{i:02d}.wav"
+            if os.path.exists(sound_file):
+                self.sounds[i] = pygame.mixer.Sound(sound_file)
+                print(f"Loaded sound for stair {i}")
         
     def set_sound_file(self, file_path):
         """Set the sound file to be played when triggered"""
         if not os.path.exists(file_path):
             print(f"Warning: Sound file {file_path} does not exist")
             return False
-        self.sound_file = file_path
         print(f"Sound file set to: {file_path}")
         return True
     
@@ -92,12 +100,8 @@ class BluetoothAudio:
             print(f"Error connecting to Bluetooth device: {e}")
             return False
     
-    def play_sound(self):
-        """Play the configured sound file"""
-        if not self.sound_file:
-            print("No sound file configured")
-            return False
-        
+    def play_sound(self, stair_num=None):
+        """Play the configured sound file asynchronously"""
         # Try to reconnect if not connected
         if not self.connected:
             print("Bluetooth not connected, attempting to reconnect...")
@@ -106,27 +110,21 @@ class BluetoothAudio:
                 return False
         
         try:
-            print(f"Attempting to play sound: {self.sound_file}")
-            
-            try:
-                # Load and play the sound using pygame
-                sound = pygame.mixer.Sound(self.sound_file)
-                sound.play()
-                
-                # Wait for the sound to finish playing
-                while pygame.mixer.get_busy():
-                    time.sleep(0.1)
-                
-                print("Sound played successfully")
+            if stair_num is not None and stair_num in self.sounds:
+                # Get the channel for this stair (0-13)
+                channel_num = stair_num - 1
+                # Get the channel object
+                channel = pygame.mixer.Channel(channel_num)
+                # Stop any currently playing sound on this channel
+                channel.stop()
+                # Play the sound on this channel without waiting
+                channel.play(self.sounds[stair_num])
+                print(f"Started playing sound for stair {stair_num} on channel {channel_num}")
                 return True
+            else:
+                print(f"No sound found for stair {stair_num}")
+                return False
                 
-            except pygame.error as e:
-                print(f"Pygame error playing sound: {e}")
-                return False
-            except Exception as e:
-                print(f"Unexpected error playing sound: {e}")
-                return False
-            
         except Exception as e:
             print(f"Error in play_sound: {e}")
             self.connected = False

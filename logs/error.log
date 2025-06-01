@@ -1,0 +1,866 @@
+2025-05-30 00:44:05: Traceback (most recent call last):
+2025-05-30 00:44:05:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:44:05:     from scipy.io import wavfile
+2025-05-30 00:44:05:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:44:05:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:44:05:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:44:05:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:44:05:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:44:05:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:44:05:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:44:05:     import scipy.sparse
+2025-05-30 00:44:05:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 301, in <module>
+2025-05-30 00:44:05:     from ._csr import *
+2025-05-30 00:44:05:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:44:05:   File "<frozen importlib._bootstrap>", line 1149, in _find_and_load_unlocked
+2025-05-30 00:44:05:   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+2025-05-30 00:44:05:   File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+2025-05-30 00:44:05:   File "<frozen importlib._bootstrap_external>", line 1069, in get_code
+2025-05-30 00:44:05:   File "<frozen importlib._bootstrap_external>", line 729, in _compile_bytecode
+2025-05-30 00:44:05: KeyboardInterrupt
+2025-05-30 00:44:07: Traceback (most recent call last):
+2025-05-30 00:44:07:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:44:07:     from scipy.io import wavfile
+2025-05-30 00:44:07:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:44:07:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:44:07:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:44:07:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:44:07:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:44:07:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:44:07:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:44:07:     import scipy.sparse
+2025-05-30 00:44:07:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 315, in <module>
+2025-05-30 00:44:07:     from . import csgraph
+2025-05-30 00:44:07:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/csgraph/__init__.py", line 187, in <module>
+2025-05-30 00:44:07:     from ._laplacian import laplacian
+2025-05-30 00:44:07:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/csgraph/_laplacian.py", line 7, in <module>
+2025-05-30 00:44:07:     from scipy.sparse.linalg import LinearOperator
+2025-05-30 00:44:07:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/linalg/__init__.py", line 131, in <module>
+2025-05-30 00:44:07:     from ._isolve import *
+2025-05-30 00:44:07:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/linalg/_isolve/__init__.py", line 4, in <module>
+2025-05-30 00:44:07:     from .iterative import *
+2025-05-30 00:44:07:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/linalg/_isolve/iterative.py", line 5, in <module>
+2025-05-30 00:44:07:     from scipy.linalg import get_lapack_funcs
+2025-05-30 00:44:07:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/linalg/__init__.py", line 203, in <module>
+2025-05-30 00:44:07:     from ._misc import *
+2025-05-30 00:44:07:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/linalg/_misc.py", line 3, in <module>
+2025-05-30 00:44:07:     from .blas import get_blas_funcs
+2025-05-30 00:44:07:   File "<frozen importlib._bootstrap>", line 1175, in _find_and_load
+2025-05-30 00:44:07: KeyboardInterrupt
+2025-05-30 00:44:09: Can't open /dev/mem: Permission denied
+2025-05-30 00:44:10: Traceback (most recent call last):
+2025-05-30 00:44:10:   File "/home/connor/crazy-stairs/main.py", line 522, in <module>
+2025-05-30 00:44:10:     main() 
+2025-05-30 00:44:10:     ^^^^^^
+2025-05-30 00:44:10:   File "/home/connor/crazy-stairs/main.py", line 411, in main
+2025-05-30 00:44:10:     bt_audio.play_sound()
+2025-05-30 00:44:10:   File "/home/connor/crazy-stairs/bluetooth_audio.py", line 117, in play_sound
+2025-05-30 00:44:10:     time.sleep(0.1)
+2025-05-30 00:44:10: KeyboardInterrupt
+2025-05-30 00:44:10: Fatal Python error: pygame_parachute: (pygame parachute) Segmentation Fault
+2025-05-30 00:44:10: Python runtime state: initialized
+2025-05-30 00:44:10: 
+2025-05-30 00:44:10: Current thread 0x0000007fa15a84c0 (most recent call first):
+2025-05-30 00:44:10:   File "/home/connor/.local/lib/python3.11/site-packages/rpi_ws281x/rpi_ws281x.py", line 126 in _cleanup
+2025-05-30 00:44:10: 
+2025-05-30 00:44:10: Extension modules: RPi._GPIO, _rpi_ws281x, pygame.base, pygame.constants, pygame.rect, pygame.rwobject, pygame.surflock, pygame.color, pygame.bufferproxy, pygame.math, pygame.surface, pygame.display, pygame.draw, pygame.event, pygame.imageext, pygame.image, pygame.joystick, pygame.key, pygame.mouse, pygame.time, pygame.mask, pygame.pixelcopy, pygame.transform, pygame.font, pygame.mixer_music, pygame.mixer, pygame.scrap, numpy.core._multiarray_umath, numpy.core._multiarray_tests, numpy.linalg._umath_linalg, numpy.fft._pocketfft_internal, numpy.random._common, numpy.random.bit_generator, numpy.random._bounded_integers, numpy.random._mt19937, numpy.random.mtrand, numpy.random._philox, numpy.random._pcg64, numpy.random._sfc64, numpy.random._generator, scipy._lib._ccallback_c, scipy.sparse._sparsetools, _csparsetools, scipy.sparse._csparsetools, scipy.linalg._fblas, scipy.linalg._flapack, scipy.linalg.cython_lapack, scipy.linalg._cythonized_array_utils, scipy.linalg._solve_toeplitz, scipy.linalg._decomp_lu_cython, scipy.linalg._matfuncs_sqrtm_triu, scipy.linalg._matfuncs_expm, scipy.linalg._linalg_pythran, scipy.linalg.cython_blas, scipy.linalg._decomp_update, scipy.sparse.linalg._dsolve._superlu, scipy.sparse.linalg._eigen.arpack._arpack, scipy.sparse.linalg._propack._spropack, scipy.sparse.linalg._propack._dpropack, scipy.sparse.linalg._propack._cpropack, scipy.sparse.linalg._propack._zpropack, scipy.sparse.csgraph._tools, scipy.sparse.csgraph._shortest_path, scipy.sparse.csgraph._traversal, scipy.sparse.csgraph._min_spanning_tree, scipy.sparse.csgraph._flow, scipy.sparse.csgraph._matching, scipy.sparse.csgraph._reordering, scipy.io.matlab._mio_utils, scipy.io.matlab._streams, scipy.io.matlab._mio5_utils, pygame._freetype (total: 72)
+2025-05-30 00:44:11: Traceback (most recent call last):
+2025-05-30 00:44:11:   File "/home/connor/crazy-stairs/main.py", line 6, in <module>
+2025-05-30 00:44:11:     from bluetooth_audio import setup_bluetooth_audio
+2025-05-30 00:44:11:   File "/home/connor/crazy-stairs/bluetooth_audio.py", line 7, in <module>
+2025-05-30 00:44:11:     import pygame
+2025-05-30 00:44:11:   File "/usr/lib/python3/dist-packages/pygame/__init__.py", line 83, in <module>
+2025-05-30 00:44:11:     from pygame.base import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+2025-05-30 00:44:11:     ^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-30 00:44:11: KeyboardInterrupt
+2025-05-30 00:44:13: Can't open /dev/mem: Permission denied
+2025-05-30 00:44:13: Traceback (most recent call last):
+2025-05-30 00:44:13:   File "/home/connor/crazy-stairs/main.py", line 522, in <module>
+2025-05-30 00:44:13:     main() 
+2025-05-30 00:44:13:     ^^^^^^
+2025-05-30 00:44:13:   File "/home/connor/crazy-stairs/main.py", line 411, in main
+2025-05-30 00:44:13:     bt_audio.play_sound()
+2025-05-30 00:44:13:   File "/home/connor/crazy-stairs/bluetooth_audio.py", line 117, in play_sound
+2025-05-30 00:44:13:     time.sleep(0.1)
+2025-05-30 00:44:13: KeyboardInterrupt
+2025-05-30 00:44:13: Fatal Python error: pygame_parachute: (pygame parachute) Segmentation Fault
+2025-05-30 00:44:13: Python runtime state: initialized
+2025-05-30 00:44:13: 
+2025-05-30 00:44:13: Current thread 0x0000007f8da724c0 (most recent call first):
+2025-05-30 00:44:13:   File "/home/connor/.local/lib/python3.11/site-packages/rpi_ws281x/rpi_ws281x.py", line 126 in _cleanup
+2025-05-30 00:44:13: 
+2025-05-30 00:44:13: Extension modules: RPi._GPIO, _rpi_ws281x, pygame.base, pygame.constants, pygame.rect, pygame.rwobject, pygame.surflock, pygame.color, pygame.bufferproxy, pygame.math, pygame.surface, pygame.display, pygame.draw, pygame.event, pygame.imageext, pygame.image, pygame.joystick, pygame.key, pygame.mouse, pygame.time, pygame.mask, pygame.pixelcopy, pygame.transform, pygame.font, pygame.mixer_music, pygame.mixer, pygame.scrap, numpy.core._multiarray_umath, numpy.core._multiarray_tests, numpy.linalg._umath_linalg, numpy.fft._pocketfft_internal, numpy.random._common, numpy.random.bit_generator, numpy.random._bounded_integers, numpy.random._mt19937, numpy.random.mtrand, numpy.random._philox, numpy.random._pcg64, numpy.random._sfc64, numpy.random._generator, scipy._lib._ccallback_c, scipy.sparse._sparsetools, _csparsetools, scipy.sparse._csparsetools, scipy.linalg._fblas, scipy.linalg._flapack, scipy.linalg.cython_lapack, scipy.linalg._cythonized_array_utils, scipy.linalg._solve_toeplitz, scipy.linalg._decomp_lu_cython, scipy.linalg._matfuncs_sqrtm_triu, scipy.linalg._matfuncs_expm, scipy.linalg._linalg_pythran, scipy.linalg.cython_blas, scipy.linalg._decomp_update, scipy.sparse.linalg._dsolve._superlu, scipy.sparse.linalg._eigen.arpack._arpack, scipy.sparse.linalg._propack._spropack, scipy.sparse.linalg._propack._dpropack, scipy.sparse.linalg._propack._cpropack, scipy.sparse.linalg._propack._zpropack, scipy.sparse.csgraph._tools, scipy.sparse.csgraph._shortest_path, scipy.sparse.csgraph._traversal, scipy.sparse.csgraph._min_spanning_tree, scipy.sparse.csgraph._flow, scipy.sparse.csgraph._matching, scipy.sparse.csgraph._reordering, scipy.io.matlab._mio_utils, scipy.io.matlab._streams, scipy.io.matlab._mio5_utils, pygame._freetype (total: 72)
+2025-05-30 00:44:15: Can't open /dev/mem: Permission denied
+2025-05-30 00:44:15: Traceback (most recent call last):
+2025-05-30 00:44:15:   File "/home/connor/crazy-stairs/main.py", line 522, in <module>
+2025-05-30 00:44:15:     main() 
+2025-05-30 00:44:15:     ^^^^^^
+2025-05-30 00:44:15:   File "/home/connor/crazy-stairs/main.py", line 397, in main
+2025-05-30 00:44:15:     bt_audio = setup_bluetooth_audio()
+2025-05-30 00:44:15:                ^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-30 00:44:15:   File "/home/connor/crazy-stairs/bluetooth_audio.py", line 144, in setup_bluetooth_audio
+2025-05-30 00:44:15:     bt_audio = BluetoothAudio(device_name=device_name)
+2025-05-30 00:44:15:                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-30 00:44:15:   File "/home/connor/crazy-stairs/bluetooth_audio.py", line 17, in __init__
+2025-05-30 00:44:15:     pygame.mixer.init()
+2025-05-30 00:44:15: KeyboardInterrupt
+2025-05-30 00:44:15: Fatal Python error: pygame_parachute: (pygame parachute) Segmentation Fault
+2025-05-30 00:44:15: Python runtime state: initialized
+2025-05-30 00:44:15: 
+2025-05-30 00:44:15: Current thread 0x0000007f914f84c0 (most recent call first):
+2025-05-30 00:44:15:   File "/home/connor/.local/lib/python3.11/site-packages/rpi_ws281x/rpi_ws281x.py", line 126 in _cleanup
+2025-05-30 00:44:15: 
+2025-05-30 00:44:15: Extension modules: RPi._GPIO, _rpi_ws281x, pygame.base, pygame.constants, pygame.rect, pygame.rwobject, pygame.surflock, pygame.color, pygame.bufferproxy, pygame.math, pygame.surface, pygame.display, pygame.draw, pygame.event, pygame.imageext, pygame.image, pygame.joystick, pygame.key, pygame.mouse, pygame.time, pygame.mask, pygame.pixelcopy, pygame.transform, pygame.font, pygame.mixer_music, pygame.mixer, pygame.scrap, numpy.core._multiarray_umath, numpy.core._multiarray_tests, numpy.linalg._umath_linalg, numpy.fft._pocketfft_internal, numpy.random._common, numpy.random.bit_generator, numpy.random._bounded_integers, numpy.random._mt19937, numpy.random.mtrand, numpy.random._philox, numpy.random._pcg64, numpy.random._sfc64, numpy.random._generator, scipy._lib._ccallback_c, scipy.sparse._sparsetools, _csparsetools, scipy.sparse._csparsetools, scipy.linalg._fblas, scipy.linalg._flapack, scipy.linalg.cython_lapack, scipy.linalg._cythonized_array_utils, scipy.linalg._solve_toeplitz, scipy.linalg._decomp_lu_cython, scipy.linalg._matfuncs_sqrtm_triu, scipy.linalg._matfuncs_expm, scipy.linalg._linalg_pythran, scipy.linalg.cython_blas, scipy.linalg._decomp_update, scipy.sparse.linalg._dsolve._superlu, scipy.sparse.linalg._eigen.arpack._arpack, scipy.sparse.linalg._propack._spropack, scipy.sparse.linalg._propack._dpropack, scipy.sparse.linalg._propack._cpropack, scipy.sparse.linalg._propack._zpropack, scipy.sparse.csgraph._tools, scipy.sparse.csgraph._shortest_path, scipy.sparse.csgraph._traversal, scipy.sparse.csgraph._min_spanning_tree, scipy.sparse.csgraph._flow, scipy.sparse.csgraph._matching, scipy.sparse.csgraph._reordering, scipy.io.matlab._mio_utils, scipy.io.matlab._streams, scipy.io.matlab._mio5_utils, pygame._freetype (total: 72)
+2025-05-30 00:44:16: Traceback (most recent call last):
+2025-05-30 00:44:16:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:44:16:     from scipy.io import wavfile
+2025-05-30 00:44:16:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:44:16:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:44:16:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:44:16:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:44:16:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:44:16:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:44:16:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:44:16:     import scipy.sparse
+2025-05-30 00:44:16:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:44:16:     from ._base import *
+2025-05-30 00:44:16:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 0, in <module>
+2025-05-30 00:44:16: KeyboardInterrupt
+2025-05-30 00:44:16: Traceback (most recent call last):
+2025-05-30 00:44:16:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:44:16:     from scipy.io import wavfile
+2025-05-30 00:44:16:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:44:16:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:44:16:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:44:16:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:44:16:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:44:16:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:44:16:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:44:16:     import scipy.sparse
+2025-05-30 00:44:16:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:44:16:     from ._base import *
+2025-05-30 00:44:16:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:44:16:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:44:16:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_sputils.py", line 10, in <module>
+2025-05-30 00:44:16:     from scipy._lib._util import np_long, np_ulong
+2025-05-30 00:44:16:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_util.py", line 13, in <module>
+2025-05-30 00:44:16:     from scipy._lib._array_api import array_namespace, is_numpy, xp_size
+2025-05-30 00:44:16:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:44:16:   File "<frozen importlib._bootstrap>", line 1149, in _find_and_load_unlocked
+2025-05-30 00:44:16:   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+2025-05-30 00:44:16:   File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+2025-05-30 00:44:16:   File "<frozen importlib._bootstrap_external>", line 1026, in get_code
+2025-05-30 00:44:16:   File "<frozen importlib._bootstrap_external>", line 1148, in path_stats
+2025-05-30 00:44:16:   File "<frozen importlib._bootstrap_external>", line 147, in _path_stat
+2025-05-30 00:44:16: KeyboardInterrupt
+2025-05-30 00:44:17: Traceback (most recent call last):
+2025-05-30 00:44:17:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:44:17:     from scipy.io import wavfile
+2025-05-30 00:44:17:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:44:17:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:44:17:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:44:17:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:44:17:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:44:17:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:44:17:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:44:17:     import scipy.sparse
+2025-05-30 00:44:17:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:44:17:     from ._base import *
+2025-05-30 00:44:17:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:44:17:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:44:17:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_sputils.py", line 10, in <module>
+2025-05-30 00:44:17:     from scipy._lib._util import np_long, np_ulong
+2025-05-30 00:44:17:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:44:17:   File "<frozen importlib._bootstrap>", line 1140, in _find_and_load_unlocked
+2025-05-30 00:44:17:   File "<frozen importlib._bootstrap>", line 1072, in _find_spec
+2025-05-30 00:44:17:   File "<frozen importlib._bootstrap>", line 1032, in __exit__
+2025-05-30 00:44:17: KeyboardInterrupt
+2025-05-30 00:44:18: Traceback (most recent call last):
+2025-05-30 00:44:18:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:44:18:     from scipy.io import wavfile
+2025-05-30 00:44:18:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:44:18:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:44:18:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:44:18:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:44:18:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:44:18:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:44:18:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:44:18:     import scipy.sparse
+2025-05-30 00:44:18:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:44:18:     from ._base import *
+2025-05-30 00:44:18:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:44:18:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:44:18:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_sputils.py", line 10, in <module>
+2025-05-30 00:44:18:     from scipy._lib._util import np_long, np_ulong
+2025-05-30 00:44:18:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_util.py", line 13, in <module>
+2025-05-30 00:44:18:     from scipy._lib._array_api import array_namespace, is_numpy, xp_size
+2025-05-30 00:44:18:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:44:18:   File "<frozen importlib._bootstrap>", line 1149, in _find_and_load_unlocked
+2025-05-30 00:44:18:   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+2025-05-30 00:44:18:   File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+2025-05-30 00:44:18:   File "<frozen importlib._bootstrap_external>", line 1021, in get_code
+2025-05-30 00:44:18:   File "<frozen importlib._bootstrap_external>", line 463, in cache_from_source
+2025-05-30 00:44:18:   File "<frozen importlib._bootstrap_external>", line 134, in _path_split
+2025-05-30 00:44:18:   File "<frozen importlib._bootstrap_external>", line 134, in <genexpr>
+2025-05-30 00:44:18: KeyboardInterrupt
+2025-05-30 00:44:19: Traceback (most recent call last):
+2025-05-30 00:44:19:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:44:19:     from scipy.io import wavfile
+2025-05-30 00:44:19:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:44:19:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:44:19:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:44:19:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:44:19:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:44:19:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:44:19:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:44:19:     import scipy.sparse
+2025-05-30 00:44:19:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:44:19:     from ._base import *
+2025-05-30 00:44:19:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:44:19:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:44:19:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_sputils.py", line 10, in <module>
+2025-05-30 00:44:19:     from scipy._lib._util import np_long, np_ulong
+2025-05-30 00:44:19:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:44:19:   File "<frozen importlib._bootstrap>", line 1149, in _find_and_load_unlocked
+2025-05-30 00:44:19:   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+2025-05-30 00:44:19:   File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+2025-05-30 00:44:19:   File "<frozen importlib._bootstrap_external>", line 1069, in get_code
+2025-05-30 00:44:19:   File "<frozen importlib._bootstrap_external>", line 729, in _compile_bytecode
+2025-05-30 00:44:19: KeyboardInterrupt
+2025-05-30 00:44:19: Traceback (most recent call last):
+2025-05-30 00:44:19:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:44:19:     from scipy.io import wavfile
+2025-05-30 00:44:19:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:44:19:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:44:19:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:44:19:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:44:19:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:44:19:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:44:19:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:44:19:     import scipy.sparse
+2025-05-30 00:44:19:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:44:19:   File "<frozen importlib._bootstrap>", line 1149, in _find_and_load_unlocked
+2025-05-30 00:44:19:   File "<frozen importlib._bootstrap>", line 676, in _load_unlocked
+2025-05-30 00:44:19:   File "<frozen importlib._bootstrap>", line 579, in module_from_spec
+2025-05-30 00:44:19:   File "<frozen importlib._bootstrap>", line 558, in _init_module_attrs
+2025-05-30 00:44:19:   File "<frozen importlib._bootstrap>", line 398, in cached
+2025-05-30 00:44:19:   File "<frozen importlib._bootstrap_external>", line 570, in _get_cached
+2025-05-30 00:44:19:   File "<frozen importlib._bootstrap_external>", line 468, in cache_from_source
+2025-05-30 00:44:19: KeyboardInterrupt
+2025-05-30 00:44:20: Traceback (most recent call last):
+2025-05-30 00:44:20:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:44:20:     from scipy.io import wavfile
+2025-05-30 00:44:20:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:44:20:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:44:20:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:44:20:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:44:20:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:44:20:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:44:20:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:44:20:     import scipy.sparse
+2025-05-30 00:44:20:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:44:20:     from ._base import *
+2025-05-30 00:44:20:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:44:20:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:44:20:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_sputils.py", line 10, in <module>
+2025-05-30 00:44:20:     from scipy._lib._util import np_long, np_ulong
+2025-05-30 00:44:20:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_util.py", line 13, in <module>
+2025-05-30 00:44:20:     from scipy._lib._array_api import array_namespace, is_numpy, xp_size
+2025-05-30 00:44:20:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_array_api.py", line 15, in <module>
+2025-05-30 00:44:20:     import numpy.typing as npt
+2025-05-30 00:44:20:   File "/usr/lib/python3/dist-packages/numpy/typing/__init__.py", line 158, in <module>
+2025-05-30 00:44:20:     from numpy._typing import (
+2025-05-30 00:44:20:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:44:20:   File "<frozen importlib._bootstrap>", line 1149, in _find_and_load_unlocked
+2025-05-30 00:44:20:   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+2025-05-30 00:44:20:   File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+2025-05-30 00:44:20:   File "<frozen importlib._bootstrap_external>", line 1069, in get_code
+2025-05-30 00:44:20:   File "<frozen importlib._bootstrap_external>", line 729, in _compile_bytecode
+2025-05-30 00:44:20: KeyboardInterrupt
+2025-05-30 00:44:21: Traceback (most recent call last):
+2025-05-30 00:44:21:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:44:21:     from scipy.io import wavfile
+2025-05-30 00:44:21:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:44:21:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:44:21:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:44:21:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:44:21:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:44:21:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:44:21:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:44:21:     import scipy.sparse
+2025-05-30 00:44:21:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:44:21:     from ._base import *
+2025-05-30 00:44:21:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:44:21:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:44:21:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_sputils.py", line 10, in <module>
+2025-05-30 00:44:21:     from scipy._lib._util import np_long, np_ulong
+2025-05-30 00:44:21:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_util.py", line 13, in <module>
+2025-05-30 00:44:21:     from scipy._lib._array_api import array_namespace, is_numpy, xp_size
+2025-05-30 00:44:21:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_array_api.py", line 15, in <module>
+2025-05-30 00:44:21:     import numpy.typing as npt
+2025-05-30 00:44:21:   File "/usr/lib/python3/dist-packages/numpy/typing/__init__.py", line 158, in <module>
+2025-05-30 00:44:21:     from numpy._typing import (
+2025-05-30 00:44:21:   File "/usr/lib/python3/dist-packages/numpy/_typing/__init__.py", line 164, in <module>
+2025-05-30 00:44:21:     from ._dtype_like import (
+2025-05-30 00:44:21:   File "/usr/lib/python3/dist-packages/numpy/_typing/_dtype_like.py", line 19, in <module>
+2025-05-30 00:44:21:     from ._char_codes import (
+2025-05-30 00:44:21:   File "<frozen importlib._bootstrap>", line 405, in parent
+2025-05-30 00:44:21: KeyboardInterrupt
+2025-05-30 00:44:22: Traceback (most recent call last):
+2025-05-30 00:44:22:   File "<frozen importlib._bootstrap>", line 1167, in _find_and_load
+2025-05-30 00:44:22: KeyboardInterrupt
+2025-05-30 00:44:22: Traceback (most recent call last):
+2025-05-30 00:44:22:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:44:22:     from scipy.io import wavfile
+2025-05-30 00:44:22:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:44:22:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:44:22:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:44:22:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:44:22:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:44:22:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:44:22:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:44:22:     import scipy.sparse
+2025-05-30 00:44:22:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 315, in <module>
+2025-05-30 00:44:22:     from . import csgraph
+2025-05-30 00:44:22:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/csgraph/__init__.py", line 187, in <module>
+2025-05-30 00:44:22:     from ._laplacian import laplacian
+2025-05-30 00:44:22:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/csgraph/_laplacian.py", line 7, in <module>
+2025-05-30 00:44:22:     from scipy.sparse.linalg import LinearOperator
+2025-05-30 00:44:22:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/linalg/__init__.py", line 131, in <module>
+2025-05-30 00:44:22:     from ._isolve import *
+2025-05-30 00:44:22:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/linalg/_isolve/__init__.py", line 4, in <module>
+2025-05-30 00:44:22:     from .iterative import *
+2025-05-30 00:44:22:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/linalg/_isolve/iterative.py", line 5, in <module>
+2025-05-30 00:44:22:     from scipy.linalg import get_lapack_funcs
+2025-05-30 00:44:22:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/linalg/__init__.py", line 203, in <module>
+2025-05-30 00:44:22:     from ._misc import *
+2025-05-30 00:44:22:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/linalg/_misc.py", line 4, in <module>
+2025-05-30 00:44:22:     from .lapack import get_lapack_funcs
+2025-05-30 00:44:22:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/linalg/lapack.py", line 850, in <module>
+2025-05-30 00:44:22:     from scipy.linalg import _flapack
+2025-05-30 00:44:22: ImportError: numpy._core.multiarray failed to import
+2025-05-30 00:45:38: Can't open /dev/mem: Permission denied
+2025-05-30 00:45:38: Traceback (most recent call last):
+2025-05-30 00:45:38:   File "/home/connor/crazy-stairs/main.py", line 522, in <module>
+2025-05-30 00:45:38:     main() 
+2025-05-30 00:45:38:     ^^^^^^
+2025-05-30 00:45:38:   File "/home/connor/crazy-stairs/main.py", line 397, in main
+2025-05-30 00:45:38:     bt_audio = setup_bluetooth_audio()
+2025-05-30 00:45:38:                ^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-30 00:45:38:   File "/home/connor/crazy-stairs/bluetooth_audio.py", line 146, in setup_bluetooth_audio
+2025-05-30 00:45:38:     if bt_audio.connect_bluetooth():
+2025-05-30 00:45:38:        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-30 00:45:38:   File "/home/connor/crazy-stairs/bluetooth_audio.py", line 50, in connect_bluetooth
+2025-05-30 00:45:38:     result = subprocess.run(['sudo','bluetoothctl', 'info', self.device_mac],
+2025-05-30 00:45:38:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-30 00:45:38:   File "/usr/lib/python3.11/subprocess.py", line 550, in run
+2025-05-30 00:45:38:     stdout, stderr = process.communicate(input, timeout=timeout)
+2025-05-30 00:45:38:                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-30 00:45:38:   File "/usr/lib/python3.11/subprocess.py", line 1207, in communicate
+2025-05-30 00:45:38:     stdout, stderr = self._communicate(input, endtime, timeout)
+2025-05-30 00:45:38: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-30 00:45:38:   File "/usr/lib/python3.11/subprocess.py", line 2059, in _communicate
+2025-05-30 00:45:38:     ready = selector.select(timeout)
+2025-05-30 00:45:38:             ^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-30 00:45:38:   File "/usr/lib/python3.11/selectors.py", line 415, in select
+2025-05-30 00:45:38:     fd_event_list = self._selector.poll(timeout)
+2025-05-30 00:45:38:                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-30 00:45:38: KeyboardInterrupt
+2025-05-30 00:45:38: Fatal Python error: pygame_parachute: (pygame parachute) Segmentation Fault
+2025-05-30 00:45:38: Python runtime state: initialized
+2025-05-30 00:45:38: 
+2025-05-30 00:45:38: Current thread 0x0000007fa5b254c0 (most recent call first):
+2025-05-30 00:45:38:   File "/home/connor/.local/lib/python3.11/site-packages/rpi_ws281x/rpi_ws281x.py", line 126 in _cleanup
+2025-05-30 00:45:38: 
+2025-05-30 00:45:39: , scipy.sparse.csgraph._tools, scipy.sparse.csgraph._shortest_path, scipy.sparse.csgraph._traversal, scipy.sparse.csgraph._min_spanning_tree, scipy.sparse.csgraph._flow, scipy.sparse.csgraph._matching, scipy.sparse.csgraph._reordering, scipy.io.matlab._mio_utils, scipy.io.matlab._streams, scipy.io.matlab._mio5_utils, pygame._freetype (total: 72)
+2025-05-30 00:45:41: Can't open /dev/mem: Permission denied
+2025-05-30 00:45:41: Traceback (most recent call last):
+2025-05-30 00:45:41:   File "/home/connor/crazy-stairs/main.py", line 522, in <module>
+2025-05-30 00:45:41:     main() 
+2025-05-30 00:45:41:     ^^^^^^
+2025-05-30 00:45:41:   File "/home/connor/crazy-stairs/main.py", line 411, in main
+2025-05-30 00:45:41:     bt_audio.play_sound()
+2025-05-30 00:45:41:   File "/home/connor/crazy-stairs/bluetooth_audio.py", line 117, in play_sound
+2025-05-30 00:45:41:     time.sleep(0.1)
+2025-05-30 00:45:41: KeyboardInterrupt
+2025-05-30 00:45:41: Fatal Python error: pygame_parachute: (pygame parachute) Segmentation Fault
+2025-05-30 00:45:41: Python runtime state: initialized
+2025-05-30 00:45:41: 
+2025-05-30 00:45:41: Current thread 0x0000007f9e5a54c0 (most recent call first):
+2025-05-30 00:45:41:   File "/home/connor/.local/lib/python3.11/site-packages/rpi_ws281x/rpi_ws281x.py", line 126 in _cleanup
+2025-05-30 00:45:41: 
+2025-05-30 00:45:41: Extension modules: RPi._GPIO, _rpi_ws281x, pygame.base, pygame.constants, pygame.rect, pygame.rwobject, pygame.surflock, pygame.color, pygame.bufferproxy, pygame.math, pygame.surface, pygame.display, pygame.draw, pygame.event, pygame.imageext, pygame.image, pygame.joystick, pygame.key, pygame.mouse, pygame.time, pygame.mask, pygame.pixelcopy, pygame.transform, pygame.font, pygame.mixer_music, pygame.mixer, pygame.scrap, numpy.core._multiarray_umath, numpy.core._multiarray_tests, numpy.linalg._umath_linalg, numpy.fft._pocketfft_internal, numpy.random._common, numpy.random.bit_generator, numpy.random._bounded_integers, numpy.random._mt19937, numpy.random.mtrand, numpy.random._philox, numpy.random._pcg64, numpy.random._sfc64, numpy.random._generator, scipy._lib._ccallback_c, scipy.sparse._sparsetools, _csparsetools, scipy.sparse._csparsetools, scipy.linalg._fblas, scipy.linalg._flapack, scipy.linalg.cython_lapack, scipy.linalg._cythonized_array_utils, scipy.linalg._solve_toeplitz, scipy.linalg._decomp_lu_cython, scipy.linalg._matfuncs_sqrtm_triu, scipy.linalg._matfuncs_expm, scipy.linalg._linalg_pythran, scipy.linalg.cython_blas, scipy.linalg._decomp_update, scipy.sparse.linalg._dsolve._superlu, scipy.sparse.linalg._eigen.arpack._arpack, scipy.sparse.linalg._propack._spropack, scipy.sparse.linalg._propack._dpropack, scipy.sparse.linalg._propack._cpropack, scipy.sparse.linalg._propack._zpropack, scipy.sparse.csgraph._tools, scipy.sparse.csgraph._shortest_path, scipy.sparse.csgraph._traversal, scipy.sparse.csgraph._min_spanning_tree, scipy.sparse.csgraph._flow, scipy.sparse.csgraph._matching, scipy.sparse.csgraph._reordering, scipy.io.matlab._mio_utils, scipy.io.matlab._streams, scipy.io.matlab._mio5_utils, pygame._freetype (total: 72)
+2025-05-30 00:45:43: Can't open /dev/mem: Permission denied
+2025-05-30 00:45:43: Traceback (most recent call last):
+2025-05-30 00:45:43:   File "/home/connor/crazy-stairs/main.py", line 522, in <module>
+2025-05-30 00:45:43:     main() 
+2025-05-30 00:45:43:     ^^^^^^
+2025-05-30 00:45:43:   File "/home/connor/crazy-stairs/main.py", line 411, in main
+2025-05-30 00:45:43:     bt_audio.play_sound()
+2025-05-30 00:45:43:   File "/home/connor/crazy-stairs/bluetooth_audio.py", line 117, in play_sound
+2025-05-30 00:45:43:     time.sleep(0.1)
+2025-05-30 00:45:43: KeyboardInterrupt
+2025-05-30 00:45:43: Fatal Python error: pygame_parachute: (pygame parachute) Segmentation Fault
+2025-05-30 00:45:43: Python runtime state: initialized
+2025-05-30 00:45:43: 
+2025-05-30 00:45:43: Current thread 0x0000007fa1aac4c0 (most recent call first):
+2025-05-30 00:45:43:   File "/home/connor/.local/lib/python3.11/site-packages/rpi_ws281x/rpi_ws281x.py", line 126 in _cleanup
+2025-05-30 00:45:43: 
+2025-05-30 00:45:43: Extension modules: RPi._GPIO, _rpi_ws281x, pygame.base, pygame.constants, pygame.rect, pygame.rwobject, pygame.surflock, pygame.color, pygame.bufferproxy, pygame.math, pygame.surface, pygame.display, pygame.draw, pygame.event, pygame.imageext, pygame.image, pygame.joystick, pygame.key, pygame.mouse, pygame.time, pygame.mask, pygame.pixelcopy, pygame.transform, pygame.font, pygame.mixer_music, pygame.mixer, pygame.scrap, numpy.core._multiarray_umath, numpy.core._multiarray_tests, numpy.linalg._umath_linalg, numpy.fft._pocketfft_internal, numpy.random._common, numpy.random.bit_generator, numpy.random._bounded_integers, numpy.random._mt19937, numpy.random.mtrand, numpy.random._philox, numpy.random._pcg64, numpy.random._sfc64, numpy.random._generator, scipy._lib._ccallback_c, scipy.sparse._sparsetools, _csparsetools, scipy.sparse._csparsetools, scipy.linalg._fblas, scipy.linalg._flapack, scipy.linalg.cython_lapack, scipy.linalg._cythonized_array_utils, scipy.linalg._solve_toeplitz, scipy.linalg._decomp_lu_cython, scipy.linalg._matfuncs_sqrtm_triu, scipy.linalg._matfuncs_expm, scipy.linalg._linalg_pythran, scipy.linalg.cython_blas, scipy.linalg._decomp_update, scipy.sparse.linalg._dsolve._superlu, scipy.sparse.linalg._eigen.arpack._arpack, scipy.sparse.linalg._propack._spropack, scipy.sparse.linalg._propack._dpropack, scipy.sparse.linalg._propack._cpropack, scipy.sparse.linalg._propack._zpropack, scipy.sparse.csgraph._tools, scipy.sparse.csgraph._shortest_path, scipy.sparse.csgraph._traversal, scipy.sparse.csgraph._min_spanning_tree, scipy.sparse.csgraph._flow, scipy.sparse.csgraph._matching, scipy.sparse.csgraph._reordering, scipy.io.matlab._mio_utils, scipy.io.matlab._streams, scipy.io.matlab._mio5_utils, pygame._freetype (total: 72)
+2025-05-30 00:45:45: Can't open /dev/mem: Permission denied
+2025-05-30 00:45:46: Traceback (most recent call last):
+2025-05-30 00:45:46:   File "/home/connor/crazy-stairs/main.py", line 522, in <module>
+2025-05-30 00:45:46:     main() 
+2025-05-30 00:45:46:     ^^^^^^
+2025-05-30 00:45:46:   File "/home/connor/crazy-stairs/main.py", line 411, in main
+2025-05-30 00:45:46:     bt_audio.play_sound()
+2025-05-30 00:45:46:   File "/home/connor/crazy-stairs/bluetooth_audio.py", line 117, in play_sound
+2025-05-30 00:45:46:     time.sleep(0.1)
+2025-05-30 00:45:46: KeyboardInterrupt
+2025-05-30 00:45:46: Fatal Python error: pygame_parachute: (pygame parachute) Segmentation Fault
+2025-05-30 00:45:46: Python runtime state: initialized
+2025-05-30 00:45:46: 
+2025-05-30 00:45:46: Current thread 0x0000007f946d04c0 (most recent call first):
+2025-05-30 00:45:46:   File "/home/connor/.local/lib/python3.11/site-packages/rpi_ws281x/rpi_ws281x.py", line 126 in _cleanup
+2025-05-30 00:45:46: 
+2025-05-30 00:45:46: Extension modules: RPi._GPIO, _rpi_ws281x, pygame.base, pygame.constants, pygame.rect, pygame.rwobject, pygame.surflock, pygame.color, pygame.bufferproxy, pygame.math, pygame.surface, pygame.display, pygame.draw, pygame.event, pygame.imageext, pygame.image, pygame.joystick, pygame.key, pygame.mouse, pygame.time, pygame.mask, pygame.pixelcopy, pygame.transform, pygame.font, pygame.mixer_music, pygame.mixer, pygame.scrap, numpy.core._multiarray_umath, numpy.core._multiarray_tests, numpy.linalg._umath_linalg, numpy.fft._pocketfft_internal, numpy.random._common, numpy.random.bit_generator, numpy.random._bounded_integers, numpy.random._mt19937, numpy.random.mtrand, numpy.random._philox, numpy.random._pcg64, numpy.random._sfc64, numpy.random._generator, scipy._lib._ccallback_c, scipy.sparse._sparsetools, _csparsetools, scipy.sparse._csparsetools, scipy.linalg._fblas, scipy.linalg._flapack, scipy.linalg.cython_lapack, scipy.linalg._cythonized_array_utils, scipy.linalg._solve_toeplitz, scipy.linalg._decomp_lu_cython, scipy.linalg._matfuncs_sqrtm_triu, scipy.linalg._matfuncs_expm, scipy.linalg._linalg_pythran, scipy.linalg.cython_blas, scipy.linalg._decomp_update, scipy.sparse.linalg._dsolve._superlu, scipy.sparse.linalg._eigen.arpack._arpack, scipy.sparse.linalg._propack._spropack, scipy.sparse.linalg._propack._dpropack, scipy.sparse.linalg._propack._cpropack, scipy.sparse.linalg._propack._zpropack, scipy.sparse.csgraph._tools, scipy.sparse.csgraph._shortest_path, scipy.sparse.csgraph._traversal, scipy.sparse.csgraph._min_spanning_tree, scipy.sparse.csgraph._flow, scipy.sparse.csgraph._matching, scipy.sparse.csgraph._reordering, scipy.io.matlab._mio_utils, scipy.io.matlab._streams, scipy.io.matlab._mio5_utils, pygame._freetype (total: 72)
+2025-05-30 00:45:47: Traceback (most recent call last):
+2025-05-30 00:45:47:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:45:47:     from scipy.io import wavfile
+2025-05-30 00:45:47:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:45:47:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:45:47:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:45:47:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:45:47:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:45:47:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:45:47:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:45:47:     import scipy.sparse
+2025-05-30 00:45:47:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:45:47:     from ._base import *
+2025-05-30 00:45:47:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:45:47:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:45:47:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_sputils.py", line 10, in <module>
+2025-05-30 00:45:47:     from scipy._lib._util import np_long, np_ulong
+2025-05-30 00:45:47:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_util.py", line 13, in <module>
+2025-05-30 00:45:47:     from scipy._lib._array_api import array_namespace, is_numpy, xp_size
+2025-05-30 00:45:47:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_array_api.py", line 15, in <module>
+2025-05-30 00:45:47:     import numpy.typing as npt
+2025-05-30 00:45:47:   File "/usr/lib/python3/dist-packages/numpy/typing/__init__.py", line 158, in <module>
+2025-05-30 00:45:47:     from numpy._typing import (
+2025-05-30 00:45:47:   File "/usr/lib/python3/dist-packages/numpy/_typing/__init__.py", line 95, in <module>
+2025-05-30 00:45:47:     from ._nbit import (
+2025-05-30 00:45:47:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:45:47:   File "<frozen importlib._bootstrap>", line 1140, in _find_and_load_unlocked
+2025-05-30 00:45:47:   File "<frozen importlib._bootstrap>", line 1080, in _find_spec
+2025-05-30 00:45:47:   File "<frozen importlib._bootstrap_external>", line 1504, in find_spec
+2025-05-30 00:45:47:   File "<frozen importlib._bootstrap_external>", line 1476, in _get_spec
+2025-05-30 00:45:47:   File "<frozen importlib._bootstrap_external>", line 1640, in find_spec
+2025-05-30 00:45:47:   File "<frozen importlib._bootstrap_external>", line 128, in _path_join
+2025-05-30 00:45:47:   File "<frozen importlib._bootstrap_external>", line 128, in <listcomp>
+2025-05-30 00:45:47: KeyboardInterrupt
+2025-05-30 00:45:48: Traceback (most recent call last):
+2025-05-30 00:45:48:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:45:48:     from scipy.io import wavfile
+2025-05-30 00:45:48:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:45:48:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:45:48:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:45:48:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:45:48:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:45:48:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:45:48:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:45:48:     import scipy.sparse
+2025-05-30 00:45:48:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:45:48:     from ._base import *
+2025-05-30 00:45:48:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:45:48:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:45:48:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_sputils.py", line 10, in <module>
+2025-05-30 00:45:48:     from scipy._lib._util import np_long, np_ulong
+2025-05-30 00:45:48:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_util.py", line 13, in <module>
+2025-05-30 00:45:48:     from scipy._lib._array_api import array_namespace, is_numpy, xp_size
+2025-05-30 00:45:48:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_array_api.py", line 15, in <module>
+2025-05-30 00:45:48:     import numpy.typing as npt
+2025-05-30 00:45:48:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:45:48:   File "<frozen importlib._bootstrap>", line 1140, in _find_and_load_unlocked
+2025-05-30 00:45:48:   File "<frozen importlib._bootstrap>", line 1080, in _find_spec
+2025-05-30 00:45:48:   File "<frozen importlib._bootstrap_external>", line 1504, in find_spec
+2025-05-30 00:45:48:   File "<frozen importlib._bootstrap_external>", line 1476, in _get_spec
+2025-05-30 00:45:48:   File "<frozen importlib._bootstrap_external>", line 1631, in find_spec
+2025-05-30 00:45:48: KeyboardInterrupt
+2025-05-30 00:45:48: Traceback (most recent call last):
+2025-05-30 00:45:48:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:45:48:     from scipy.io import wavfile
+2025-05-30 00:45:48:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:45:48:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:45:48:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:45:48:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:45:48:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:45:48:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:45:48:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:45:48:     import scipy.sparse
+2025-05-30 00:45:48:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:45:48:     from ._base import *
+2025-05-30 00:45:48:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:45:48:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:45:48:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_sputils.py", line 10, in <module>
+2025-05-30 00:45:48:     from scipy._lib._util import np_long, np_ulong
+2025-05-30 00:45:48:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:45:48:   File "<frozen importlib._bootstrap>", line 1140, in _find_and_load_unlocked
+2025-05-30 00:45:48:   File "<frozen importlib._bootstrap>", line 1080, in _find_spec
+2025-05-30 00:45:48:   File "<frozen importlib._bootstrap_external>", line 1504, in find_spec
+2025-05-30 00:45:48:   File "<frozen importlib._bootstrap_external>", line 1476, in _get_spec
+2025-05-30 00:45:48:   File "<frozen importlib._bootstrap_external>", line 1612, in find_spec
+2025-05-30 00:45:48:   File "<frozen importlib._bootstrap_external>", line 147, in _path_stat
+2025-05-30 00:45:48: KeyboardInterrupt
+2025-05-30 00:45:49: Traceback (most recent call last):
+2025-05-30 00:45:49:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:45:49:     from scipy.io import wavfile
+2025-05-30 00:45:49:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:45:49:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:45:49:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:45:49:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:45:49:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:45:49:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:45:49:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:45:49:     import scipy.sparse
+2025-05-30 00:45:49:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:45:49:     from ._base import *
+2025-05-30 00:45:49:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:45:49:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:45:49:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_sputils.py", line 10, in <module>
+2025-05-30 00:45:49:     from scipy._lib._util import np_long, np_ulong
+2025-05-30 00:45:49:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_util.py", line 13, in <module>
+2025-05-30 00:45:49:     from scipy._lib._array_api import array_namespace, is_numpy, xp_size
+2025-05-30 00:45:49:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_array_api.py", line 15, in <module>
+2025-05-30 00:45:49:     import numpy.typing as npt
+2025-05-30 00:45:49:   File "/usr/lib/python3/dist-packages/numpy/typing/__init__.py", line 158, in <module>
+2025-05-30 00:45:49:     from numpy._typing import (
+2025-05-30 00:45:49:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:45:49:   File "<frozen importlib._bootstrap>", line 1149, in _find_and_load_unlocked
+2025-05-30 00:45:49:   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+2025-05-30 00:45:49:   File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+2025-05-30 00:45:49:   File "<frozen importlib._bootstrap_external>", line 1026, in get_code
+2025-05-30 00:45:49:   File "<frozen importlib._bootstrap_external>", line 1148, in path_stats
+2025-05-30 00:45:49:   File "<frozen importlib._bootstrap_external>", line 147, in _path_stat
+2025-05-30 00:45:49: KeyboardInterrupt
+2025-05-30 00:45:50: Traceback (most recent call last):
+2025-05-30 00:45:50:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:45:50:     from scipy.io import wavfile
+2025-05-30 00:45:50:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:45:50:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:45:50:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:45:50:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:45:50:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:45:50:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:45:50:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:45:50:     import scipy.sparse
+2025-05-30 00:45:50:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:45:50:     from ._base import *
+2025-05-30 00:45:50:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:45:50:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:45:50:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_sputils.py", line 10, in <module>
+2025-05-30 00:45:50:     from scipy._lib._util import np_long, np_ulong
+2025-05-30 00:45:50:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_util.py", line 13, in <module>
+2025-05-30 00:45:50:     from scipy._lib._array_api import array_namespace, is_numpy, xp_size
+2025-05-30 00:45:50:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:45:50:   File "<frozen importlib._bootstrap>", line 1149, in _find_and_load_unlocked
+2025-05-30 00:45:50:   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+2025-05-30 00:45:50:   File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+2025-05-30 00:45:50:   File "<frozen importlib._bootstrap_external>", line 1021, in get_code
+2025-05-30 00:45:50:   File "<frozen importlib._bootstrap_external>", line 463, in cache_from_source
+2025-05-30 00:45:50:   File "<frozen importlib._bootstrap_external>", line 134, in _path_split
+2025-05-30 00:45:50:   File "<frozen importlib._bootstrap_external>", line 134, in <genexpr>
+2025-05-30 00:45:50: KeyboardInterrupt
+2025-05-30 00:45:51: Traceback (most recent call last):
+2025-05-30 00:45:51:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:45:51:     from scipy.io import wavfile
+2025-05-30 00:45:51:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:45:51:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:45:51:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:45:51:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:45:51:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:45:51:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:45:51:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:45:51:     import scipy.sparse
+2025-05-30 00:45:51:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:45:51:     from ._base import *
+2025-05-30 00:45:51:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:45:51:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:45:51:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_sputils.py", line 10, in <module>
+2025-05-30 00:45:51:     from scipy._lib._util import np_long, np_ulong
+2025-05-30 00:45:51:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_util.py", line 13, in <module>
+2025-05-30 00:45:51:     from scipy._lib._array_api import array_namespace, is_numpy, xp_size
+2025-05-30 00:45:51:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_array_api.py", line 15, in <module>
+2025-05-30 00:45:51:     import numpy.typing as npt
+2025-05-30 00:45:51:   File "/usr/lib/python3/dist-packages/numpy/typing/__init__.py", line 158, in <module>
+2025-05-30 00:45:51:     from numpy._typing import (
+2025-05-30 00:45:51:   File "/usr/lib/python3/dist-packages/numpy/_typing/__init__.py", line 164, in <module>
+2025-05-30 00:45:51:     from ._dtype_like import (
+2025-05-30 00:45:51:   File "/usr/lib/python3/dist-packages/numpy/_typing/_dtype_like.py", line 17, in <module>
+2025-05-30 00:45:51:     from ._generic_alias import _DType as DType
+2025-05-30 00:45:51:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:45:51:   File "<frozen importlib._bootstrap>", line 1149, in _find_and_load_unlocked
+2025-05-30 00:45:51:   File "<frozen importlib._bootstrap>", line 701, in _load_unlocked
+2025-05-30 00:45:51: KeyboardInterrupt
+2025-05-30 00:45:51: Traceback (most recent call last):
+2025-05-30 00:45:51:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:45:51:     from scipy.io import wavfile
+2025-05-30 00:45:51:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:45:51:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:45:51:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:45:51:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:45:51:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:45:51:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:45:51:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:45:51:     import scipy.sparse
+2025-05-30 00:45:51:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:45:51:     from ._base import *
+2025-05-30 00:45:51:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:45:51:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:45:51:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_sputils.py", line 10, in <module>
+2025-05-30 00:45:51:     from scipy._lib._util import np_long, np_ulong
+2025-05-30 00:45:51:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_util.py", line 13, in <module>
+2025-05-30 00:45:51:     from scipy._lib._array_api import array_namespace, is_numpy, xp_size
+2025-05-30 00:45:51:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_array_api.py", line 15, in <module>
+2025-05-30 00:45:51:     import numpy.typing as npt
+2025-05-30 00:45:51:   File "/usr/lib/python3/dist-packages/numpy/typing/__init__.py", line 158, in <module>
+2025-05-30 00:45:51:     from numpy._typing import (
+2025-05-30 00:45:51:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:45:51:   File "<frozen importlib._bootstrap>", line 1149, in _find_and_load_unlocked
+2025-05-30 00:45:51:   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+2025-05-30 00:45:51:   File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+2025-05-30 00:45:51:   File "<frozen importlib._bootstrap_external>", line 1026, in get_code
+2025-05-30 00:45:51:   File "<frozen importlib._bootstrap_external>", line 1148, in path_stats
+2025-05-30 00:45:51:   File "<frozen importlib._bootstrap_external>", line 147, in _path_stat
+2025-05-30 00:45:51: KeyboardInterrupt
+2025-05-30 00:45:52: Traceback (most recent call last):
+2025-05-30 00:45:52:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:45:52:     from scipy.io import wavfile
+2025-05-30 00:45:52:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:45:52:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:45:52:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:45:52:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:45:52:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:45:52:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:45:52:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:45:52:     import scipy.sparse
+2025-05-30 00:45:52:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:45:52:     from ._base import *
+2025-05-30 00:45:52:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:45:52:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:45:52:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_sputils.py", line 10, in <module>
+2025-05-30 00:45:52:     from scipy._lib._util import np_long, np_ulong
+2025-05-30 00:45:52:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_util.py", line 13, in <module>
+2025-05-30 00:45:52:     from scipy._lib._array_api import array_namespace, is_numpy, xp_size
+2025-05-30 00:45:52:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:45:52:   File "<frozen importlib._bootstrap>", line 1149, in _find_and_load_unlocked
+2025-05-30 00:45:52:   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+2025-05-30 00:45:52:   File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+2025-05-30 00:45:52:   File "<frozen importlib._bootstrap_external>", line 1032, in get_code
+2025-05-30 00:45:52:   File "<frozen importlib._bootstrap_external>", line 1130, in get_data
+2025-05-30 00:45:52: KeyboardInterrupt
+2025-05-30 00:45:53: Traceback (most recent call last):
+2025-05-30 00:45:53:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:45:53:     from scipy.io import wavfile
+2025-05-30 00:45:53:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:45:53:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:45:53:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:45:53:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:45:53:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:45:53:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:45:53:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:45:53:     import scipy.sparse
+2025-05-30 00:45:53:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:45:53:     from ._base import *
+2025-05-30 00:45:53:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:45:53:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:45:53:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_sputils.py", line 10, in <module>
+2025-05-30 00:45:53:     from scipy._lib._util import np_long, np_ulong
+2025-05-30 00:45:53:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:45:53:   File "<frozen importlib._bootstrap>", line 1149, in _find_and_load_unlocked
+2025-05-30 00:45:53:   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+2025-05-30 00:45:53:   File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+2025-05-30 00:45:53:   File "<frozen importlib._bootstrap_external>", line 1069, in get_code
+2025-05-30 00:45:53:   File "<frozen importlib._bootstrap_external>", line 729, in _compile_bytecode
+2025-05-30 00:45:53: KeyboardInterrupt
+2025-05-30 00:45:54: Traceback (most recent call last):
+2025-05-30 00:45:54:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:45:54:     from scipy.io import wavfile
+2025-05-30 00:45:54:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:45:54:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:45:54:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:45:54:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:45:54:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:45:54:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:45:54:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:45:54:     import scipy.sparse
+2025-05-30 00:45:54:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:45:54:     from ._base import *
+2025-05-30 00:45:54:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:45:54:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:45:54:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_sputils.py", line 10, in <module>
+2025-05-30 00:45:54:     from scipy._lib._util import np_long, np_ulong
+2025-05-30 00:45:54:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_util.py", line 13, in <module>
+2025-05-30 00:45:54:     from scipy._lib._array_api import array_namespace, is_numpy, xp_size
+2025-05-30 00:45:54:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_array_api.py", line 15, in <module>
+2025-05-30 00:45:54:     import numpy.typing as npt
+2025-05-30 00:45:54:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:45:54:   File "<frozen importlib._bootstrap>", line 1149, in _find_and_load_unlocked
+2025-05-30 00:45:54:   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+2025-05-30 00:45:54:   File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+2025-05-30 00:45:54:   File "<frozen importlib._bootstrap_external>", line 1069, in get_code
+2025-05-30 00:45:54:   File "<frozen importlib._bootstrap_external>", line 729, in _compile_bytecode
+2025-05-30 00:45:54: KeyboardInterrupt
+2025-05-30 00:45:54: Traceback (most recent call last):
+2025-05-30 00:45:54:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:45:54:     from scipy.io import wavfile
+2025-05-30 00:45:54:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:45:54:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:45:54:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:45:54:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:45:54:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:45:54:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:45:54:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:45:54:     import scipy.sparse
+2025-05-30 00:45:54:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:45:54:     from ._base import *
+2025-05-30 00:45:54:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:45:54:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:45:54:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:45:54:   File "<frozen importlib._bootstrap>", line 1149, in _find_and_load_unlocked
+2025-05-30 00:45:54:   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+2025-05-30 00:45:54:   File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+2025-05-30 00:45:54:   File "<frozen importlib._bootstrap_external>", line 1069, in get_code
+2025-05-30 00:45:54:   File "<frozen importlib._bootstrap_external>", line 729, in _compile_bytecode
+2025-05-30 00:45:54: KeyboardInterrupt
+2025-05-30 00:45:55: Traceback (most recent call last):
+2025-05-30 00:45:55:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:45:55:     from scipy.io import wavfile
+2025-05-30 00:45:55:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:45:55:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:45:55:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:45:55:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:45:55:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:45:55:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:45:55:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:45:55:     import scipy.sparse
+2025-05-30 00:45:55:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:45:55:     from ._base import *
+2025-05-30 00:45:55:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:45:55:   File "<frozen importlib._bootstrap>", line 1149, in _find_and_load_unlocked
+2025-05-30 00:45:55:   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+2025-05-30 00:45:55:   File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+2025-05-30 00:45:55:   File "<frozen importlib._bootstrap_external>", line 1069, in get_code
+2025-05-30 00:45:55:   File "<frozen importlib._bootstrap_external>", line 729, in _compile_bytecode
+2025-05-30 00:45:55: KeyboardInterrupt
+2025-05-30 00:45:56: Traceback (most recent call last):
+2025-05-30 00:45:56:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:45:56:     from scipy.io import wavfile
+2025-05-30 00:45:56:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:45:56:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:45:56:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:45:56:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:45:56:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:45:56:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:45:56:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:45:56:     import scipy.sparse
+2025-05-30 00:45:56:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:45:56:     from ._base import *
+2025-05-30 00:45:56:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:45:56:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:45:56:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_sputils.py", line 10, in <module>
+2025-05-30 00:45:56:     from scipy._lib._util import np_long, np_ulong
+2025-05-30 00:45:56:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_util.py", line 13, in <module>
+2025-05-30 00:45:56:     from scipy._lib._array_api import array_namespace, is_numpy, xp_size
+2025-05-30 00:45:56:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_array_api.py", line 15, in <module>
+2025-05-30 00:45:56:     import numpy.typing as npt
+2025-05-30 00:45:56:   File "/usr/lib/python3/dist-packages/numpy/typing/__init__.py", line 158, in <module>
+2025-05-30 00:45:56:     from numpy._typing import (
+2025-05-30 00:45:56:   File "/usr/lib/python3/dist-packages/numpy/_typing/__init__.py", line 107, in <module>
+2025-05-30 00:45:56:     from ._char_codes import (
+2025-05-30 00:45:56:   File "<frozen importlib._bootstrap>", line 1175, in _find_and_load
+2025-05-30 00:45:56:   File "<frozen importlib._bootstrap>", line 170, in __enter__
+2025-05-30 00:45:56:   File "<frozen importlib._bootstrap>", line 209, in _get_module_lock
+2025-05-30 00:45:56: KeyboardInterrupt
+2025-05-30 00:45:57: Traceback (most recent call last):
+2025-05-30 00:45:57:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:45:57:     from scipy.io import wavfile
+2025-05-30 00:45:57:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:45:57:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:45:57:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:45:57:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:45:57:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:45:57:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:45:57:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:45:57:     import scipy.sparse
+2025-05-30 00:45:57:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:45:57:     from ._base import *
+2025-05-30 00:45:57:   File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+2025-05-30 00:45:57:   File "<frozen importlib._bootstrap>", line 1149, in _find_and_load_unlocked
+2025-05-30 00:45:57:   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+2025-05-30 00:45:57:   File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+2025-05-30 00:45:57:   File "<frozen importlib._bootstrap_external>", line 1069, in get_code
+2025-05-30 00:45:57:   File "<frozen importlib._bootstrap_external>", line 729, in _compile_bytecode
+2025-05-30 00:45:57: KeyboardInterrupt
+2025-05-30 00:45:57: Traceback (most recent call last):
+2025-05-30 00:45:57:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:45:57:     from scipy.io import wavfile
+2025-05-30 00:45:57:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 97, in <module>
+2025-05-30 00:45:57:     from .matlab import loadmat, savemat, whosmat
+2025-05-30 00:45:57:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/__init__.py", line 46, in <module>
+2025-05-30 00:45:57:     from ._mio import loadmat, savemat, whosmat
+2025-05-30 00:45:58:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio.py", line 9, in <module>
+2025-05-30 00:45:58:     from ._mio4 import MatFile4Reader, MatFile4Writer
+2025-05-30 00:45:58:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/matlab/_mio4.py", line 10, in <module>
+2025-05-30 00:45:58:     import scipy.sparse
+2025-05-30 00:45:58:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/__init__.py", line 300, in <module>
+2025-05-30 00:45:58:     from ._base import *
+2025-05-30 00:45:58:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_base.py", line 5, in <module>
+2025-05-30 00:45:58:     from ._sputils import (asmatrix, check_reshape_kwargs, check_shape,
+2025-05-30 00:45:58:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/sparse/_sputils.py", line 10, in <module>
+2025-05-30 00:45:58:     from scipy._lib._util import np_long, np_ulong
+2025-05-30 00:45:58:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_util.py", line 13, in <module>
+2025-05-30 00:45:58:     from scipy._lib._array_api import array_namespace, is_numpy, xp_size
+2025-05-30 00:45:58:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/_lib/_array_api.py", line 15, in <module>
+2025-05-30 00:45:58:     import numpy.typing as npt
+2025-05-30 00:45:58:   File "/usr/lib/python3/dist-packages/numpy/typing/__init__.py", line 168, in <module>
+2025-05-30 00:45:58:     from numpy._typing._add_docstring import _docstrings
+2025-05-30 00:45:58:   File "/usr/lib/python3/dist-packages/numpy/_typing/_add_docstring.py", line 152, in <module>
+2025-05-30 00:45:58:     _docstrings = _parse_docstrings()
+2025-05-30 00:45:58:                   ^^^^^^^^^^^^^^^^^^^
+2025-05-30 00:45:58:   File "/usr/lib/python3/dist-packages/numpy/_typing/_add_docstring.py", line 41, in _parse_docstrings
+2025-05-30 00:45:58:     m = re.match(r'^(\s+)[-=]+\s*$', line)
+2025-05-30 00:45:58:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-30 00:45:58:   File "/usr/lib/python3.11/re/__init__.py", line 163, in match
+2025-05-30 00:45:58:     def match(pattern, string, flags=0):
+2025-05-30 00:45:58:     
+2025-05-30 00:45:58: KeyboardInterrupt
+2025-05-30 00:45:59: Traceback (most recent call last):
+2025-05-30 00:45:59:   File "/home/connor/crazy-stairs/main.py", line 10, in <module>
+2025-05-30 00:45:59:     from scipy.io import wavfile
+2025-05-30 00:45:59:   File "/home/connor/.local/lib/python3.11/site-packages/scipy/io/__init__.py", line 105, in <module>
+2025-05-30 00:45:59:     from ._fast_matrix_market import mminfo, mmread, mmwrite
+2025-05-30 00:45:59: KeyboardInterrupt
+2025-05-30 00:47:08: Can't open /dev/mem: Permission denied
+2025-05-30 00:47:27: Fatal Python error: pygame_parachute: (pygame parachute) Segmentation Fault
+2025-05-30 00:47:27: Python runtime state: initialized
+2025-05-30 00:47:27: 
+2025-05-30 00:47:27: Current thread 0x0000007fa5cfb4c0 (most recent call first):
+2025-05-30 00:47:27:   File "/home/connor/.local/lib/python3.11/site-packages/rpi_ws281x/rpi_ws281x.py", line 126 in _cleanup
+2025-05-30 00:47:27: 
+2025-05-30 00:47:27: Extension modules: RPi._GPIO, _rpi_ws281x, pygame.base, pygame.constants, pygame.rect, pygame.rwobject, pygame.surflock, pygame.color, pygame.bufferproxy, pygame.math, pygame.surface, pygame.display, pygame.draw, pygame.event, pygame.imageext, pygame.image, pygame.joystick, pygame.key, pygame.mouse, pygame.time, pygame.mask, pygame.pixelcopy, pygame.transform, pygame.font, pygame.mixer_music, pygame.mixer, pygame.scrap, numpy.core._multiarray_umath, numpy.core._multiarray_tests, numpy.linalg._umath_linalg, numpy.fft._pocketfft_internal, numpy.random._common, numpy.random.bit_generator, numpy.random._bounded_integers, numpy.random._mt19937, numpy.random.mtrand, numpy.random._philox, numpy.random._pcg64, numpy.random._sfc64, numpy.random._generator, scipy._lib._ccallback_c, scipy.sparse._sparsetools, _csparsetools, scipy.sparse._csparsetools, scipy.linalg._fblas, scipy.linalg._flapack, scipy.linalg.cython_lapack, scipy.linalg._cythonized_array_utils, scipy.linalg._solve_toeplitz, scipy.linalg._decomp_lu_cython, scipy.linalg._matfuncs_sqrtm_triu, scipy.linalg._matfuncs_expm, scipy.linalg._linalg_pythran, scipy.linalg.cython_blas, scipy.linalg._decomp_update, scipy.sparse.linalg._dsolve._superlu, scipy.sparse.linalg._eigen.arpack._arpack, scipy.sparse.linalg._propack._spropack, scipy.sparse.linalg._propack._dpropack, scipy.sparse.linalg._propack._cpropack, scipy.sparse.linalg._propack._zpropack, scipy.sparse.csgraph._tools, scipy.sparse.csgraph._shortest_path, scipy.sparse.csgraph._traversal, scipy.sparse.csgraph._min_spanning_tree, scipy.sparse.csgraph._flow, scipy.sparse.csgraph._matching, scipy.sparse.csgraph._reordering, scipy.io.matlab._mio_utils, scipy.io.matlab._streams, scipy.io.matlab._mio5_utils, pygame._freetype (total: 72)
+2025-05-30 00:47:41: Can't open /dev/mem: Permission denied
+2025-05-30 00:47:53: Fatal Python error: pygame_parachute: (pygame parachute) Segmentation Fault
+2025-05-30 00:47:53: Python runtime state: initialized
+2025-05-30 00:47:53: 
+2025-05-30 00:47:53: Current thread 0x0000007f8d19a4c0 (most recent call first):
+2025-05-30 00:47:53:   File "/home/connor/.local/lib/python3.11/site-packages/rpi_ws281x/rpi_ws281x.py", line 126 in _cleanup
+2025-05-30 00:47:53: 
+2025-05-30 00:47:53: scipy.io.matlab._mio_utils, scipy.io.matlab._streams, scipy.io.matlab._mio5_utils, pygame._freetype (total: 72)
+2025-05-30 00:47:54: Can't open /dev/mem: Permission denied
+2025-05-30 00:48:52: Fatal Python error: pygame_parachute: (pygame parachute) Segmentation Fault
+2025-05-30 00:48:52: Python runtime state: initialized
+2025-05-30 00:48:52: 
+2025-05-30 00:48:52: Current thread 0x0000007f8f5814c0 (most recent call first):
+2025-05-30 00:48:52:   File "/home/connor/.local/lib/python3.11/site-packages/rpi_ws281x/rpi_ws281x.py", line 126 in _cleanup
+2025-05-30 00:48:52: 
+2025-05-30 00:48:52: Extension modules: RPi._GPIO, _rpi_ws281x, pygame.base, pygame.constants, pygame.rect, pygame.rwobject, pygame.surflock, pygame.color, pygame.bufferproxy, pygame.math, pygame.surface, pygame.display, pygame.draw, pygame.event, pygame.imageext, pygame.image, pygame.joystick, pygame.key, pygame.mouse, pygame.time, pygame.mask, pygame.pixelcopy, pygame.transform, pygame.font, pygame.mixer_music, pygame.mixer, pygame.scrap, numpy.core._multiarray_umath, numpy.core._multiarray_tests, numpy.linalg._umath_linalg, numpy.fft._pocketfft_internal, numpy.random._common, numpy.random.bit_generator, numpy.random._bounded_integers, numpy.random._mt19937, numpy.random.mtrand, numpy.random._philox, numpy.random._pcg64, numpy.random._sfc64, numpy.random._generator, scipy._lib._ccallback_c, scipy.sparse._sparsetools, _csparsetools, scipy.sparse._csparsetools, scipy.linalg._fblas, scipy.linalg._flapack, scipy.linalg.cython_lapack, scipy.linalg._cythonized_array_utils, scipy.linalg._solve_toeplitz, scipy.linalg._decomp_lu_cython, scipy.linalg._matfuncs_sqrtm_triu, scipy.linalg._matfuncs_expm, scipy.linalg._linalg_pythran, scipy.linalg.cython_blas, scipy.linalg._decomp_update, scipy.sparse.linalg._dsolve._superlu, scipy.sparse.linalg._eigen.arpack._arpack, scipy.sparse.linalg._propack._spropack, scipy.sparse.linalg._propack._dpropack, scipy.sparse.linalg._propack._cpropack, scipy.sparse.linalg._propack._zpropack, scipy.sparse.csgraph._tools, scipy.sparse.csgraph._shortest_path, scipy.sparse.csgraph._traversal, scipy.sparse.csgraph._min_spanning_tree, scipy.sparse.csgraph._flow, scipy.sparse.csgraph._matching, scipy.sparse.csgraph._reordering, scipy.io.matlab._mio_utils, scipy.io.matlab._streams, scipy.io.matlab._mio5_utils, pygame._freetype (total: 72)

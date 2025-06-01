@@ -155,7 +155,7 @@ def test_led_strip(strip):
     print("LED test complete")
 
 # Sound configuration
-SOUND_FILE = "/home/connor/crazy-stairs/stair_trigger.wav"  # Sound file to play when triggered
+SOUND_FILE = "/home/connor/crazy-stairs/stair_sounds/harp/harp01.wav"  # Sound file to play when triggered
 SOUND_COOLDOWN = 2.0  # Minimum time between sound triggers in seconds
 TONE_DURATION = 0.25  # Duration of each tone in seconds
 SAMPLE_RATE = 44100   # Standard audio sample rate
@@ -376,6 +376,10 @@ def set_volume_to_max():
     except Exception as e:
         print(f"Warning: Error setting volume: {e}")
 
+def get_sound_file_for_stair(stair_num):
+    """Get the path to the harp sound file for a given stair number."""
+    return f"stair_sounds/harp/harp{stair_num:02d}.wav"
+
 def main():
     
     # Create multiplexer instance
@@ -392,32 +396,9 @@ def main():
     else:
         print("Skipping LED initialization and test pattern")
     
-    # Set up Bluetooth audio and generate tones
-    print("\nSetting up Bluetooth audio...")
-    bt_audio = setup_bluetooth_audio()
-    if bt_audio:
-        # Generate and cache all tones
-        print("Generating tone cache...")
-        # set_volume_to_max()
-        # ensure_tone_cache()
-        # Play test sound to verify audio system
-        print("\nPlaying test sound to verify audio system...")
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        test_sound_path = os.path.join(script_dir, SOUND_FILE)
-        if os.path.exists(test_sound_path):
-            print("Found audio file to play: ", test_sound_path)
-            bt_audio.set_sound_file(test_sound_path)
-            print("initiating test sound")
-            bt_audio.play_sound()
-            print("Test sound played successfully")
-        else:
-            print(f"Warning: Test sound file {test_sound_path} not found")
-    else:
-        print("Warning: Bluetooth audio not available")
     print("Waiting 5 seconds to start the main loop")
     time.sleep(5)
     last_update = time.time()
-    last_sound_trigger = 0  # Track last time sound was played
     last_table_update = 0  # Track when we last updated the table
     table_update_interval = 0.05  # Update table 20 times per second
     update_interval = 0.01  # 10ms refresh rate (100Hz)
@@ -474,23 +455,13 @@ def main():
                         
                         # Get corresponding stair number
                         stair_num = STAIR_MAPPING.get(channel)
-                        if stair_num is not None:
-                            if strip is not None:
-                                if is_triggered:
-                                    # Fade in over 0.5 seconds (50 steps, 10ms delay)
-                                    fade_stair_leds(strip, stair_num, 255, fade_steps=5, fade_delay=0.01)
-                                else:
-                                    # Fade out slowly (20 steps, 2ms delay)
-                                    fade_stair_leds(strip, stair_num, 0, fade_steps=5, fade_delay=0.002)
-                            
-                            # Play tone when triggered
-                            if is_triggered and bt_audio and current_time - last_sound_trigger >= SOUND_COOLDOWN:
-                                tone_file = get_tone_file_for_stair(stair_num)
-                                if os.path.exists(tone_file):
-                                    bt_audio.set_sound_file(tone_file)
-                                    bt_audio.play_sound()
-                                    last_sound_trigger = current_time
-                                    print(f"Playing tone for stair {stair_num}")
+                        if stair_num is not None and strip is not None:
+                            if is_triggered:
+                                # Fade in over 0.5 seconds (50 steps, 10ms delay)
+                                fade_stair_leds(strip, stair_num, 255, fade_steps=5, fade_delay=0.01)
+                            else:
+                                # Fade out slowly (20 steps, 2ms delay)
+                                fade_stair_leds(strip, stair_num, 0, fade_steps=5, fade_delay=0.002)
                 else:
                     # If we got an invalid reading, remove this sensor from active list
                     active_sensors.remove(channel)

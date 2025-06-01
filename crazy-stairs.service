@@ -1,0 +1,16 @@
+[Unit]
+Description=Crazy Stairs LED and Audio Service
+After=network.target bluetooth.target
+
+[Service]
+Type=simple
+User=connor
+WorkingDirectory=/home/connor/crazy-stairs
+ExecStart=/usr/bin/python3 /home/connor/crazy-stairs/main.py
+Restart=always
+RestartSec=10
+StandardOutput=append:/var/log/crazy-stairs.log
+StandardError=append:/var/log/crazy-stairs.error.log
+
+[Install]
+WantedBy=multi-user.target 
